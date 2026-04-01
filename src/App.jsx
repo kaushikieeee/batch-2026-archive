@@ -16,7 +16,6 @@ import Admin from './pages/Admin'
 import MyProfile from './pages/MyProfile'
 import Slambook from './pages/Slambook'
 import NotFound from './pages/NotFound'
-import { isMobile } from 'react-device-detect'
 
 /* ── Page transitions ── */
 const pv = {
@@ -75,17 +74,6 @@ function MainApp() {
     id = requestAnimationFrame(raf)
     return () => { cancelAnimationFrame(id); lenis.destroy() }
   }, [])
-
-  if (isMobile) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-bg-primary text-text-primary p-6 text-center">
-        <h1 className="font-archive text-4xl text-accent-yellow mb-4">Mobile Experience</h1>
-        <p className="font-body text-sm text-muted">
-          Your mobile app version goes here.
-        </p>
-      </div>
-    )
-  }
 
   return (
     <>

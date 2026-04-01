@@ -13,26 +13,26 @@ const NAV = [
 
 const ADMIN_NAV = { label: 'Admin', path: '/admin', icon: '⚑' }
 
-// Mobile bottom nav (4 tabs)
+// Mobile bottom nav (Floating modern capsule)
 function MobileNav({ location, links }) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden mobile-nav safe-area-pb">
-      <div className="flex items-center justify-around px-2 py-3">
+    <div className="fixed bottom-5 left-0 right-0 z-50 md:hidden flex justify-center px-4 pointer-events-none safe-area-pb">
+      <div className="flex items-center overflow-x-auto no-scrollbar w-full max-w-sm bg-[#111111]/85 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-1.5 shadow-[0_20px_40px_rgba(0,0,0,0.8)] pointer-events-auto justify-around">
         {links.map(link => {
           const active = location.pathname === link.path
           return (
             <Link key={link.path} to={link.path}
-              className="flex flex-col items-center gap-1 min-w-[60px] py-1">
-              <motion.div
-                animate={{ scale: active ? 1.15 : 1 }}
-                className={`w-10 h-10 rounded-2xl flex items-center justify-center text-base transition-colors ${
-                  active ? 'bg-accent-yellow text-bg-primary' : 'text-muted'
-                }`}>
+              className="relative flex flex-col items-center justify-center min-w-[64px] h-[56px] rounded-[1.5rem] transition-all duration-300 flex-shrink-0"
+            >
+              {active && (
+                <motion.div layoutId="mobile-nav-active" className="absolute inset-0 rounded-[1.5rem] bg-accent-yellow/10 border border-accent-yellow/20" transition={{ type: 'spring', stiffness: 400, damping: 30 }} />
+              )}
+              <div className={`relative z-10 text-[18px] transition-colors mb-0.5 ${active ? 'text-accent-yellow drop-shadow-[0_0_8px_rgba(244,196,48,0.5)]' : 'text-muted hover:text-white'}`}>
                 {link.icon}
-              </motion.div>
-              <span className={`font-mono text-[8px] tracking-wider transition-colors ${
-                active ? 'text-accent-yellow' : 'text-muted/50'
-              }`}>{link.label}</span>
+              </div>
+              <span className={`relative z-10 font-mono text-[8px] tracking-wider transition-colors ${active ? 'text-accent-yellow' : 'text-muted/50'}`}>
+                {link.label}
+              </span>
             </Link>
           )
         })}
