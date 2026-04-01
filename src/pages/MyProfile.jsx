@@ -1,6 +1,5 @@
-import { useState, useEffect, memo } from 'react';
-import { supabase, uploadFile } from '../lib/supabase';
-import { useRef } from 'react';
+import { useState, useEffect, memo, useRef } from 'react';
+import { supabase, uploadFile, deleteUserProfileData } from '../lib/supabase';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
 import SignaturePad from '../components/SignaturePad';
@@ -171,6 +170,22 @@ export default function MyProfile({ user }) {
     }
   };
 
+  const handleDeleteProfile = async () => {
+    if (!window.confirm("Are you sure you want to permanently delete your entire profile and its data? This cannot be undone.")) return;
+    
+    try {
+      setLoading(true);
+      await deleteUserProfileData(user.id);
+      toast.success("Profile deleted successfully.");
+      window.location.href = '/';
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to delete profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleChange = (field, value) => {
     setProfile(prev => ({ ...prev, [field]: value }));
   };
@@ -219,38 +234,6 @@ export default function MyProfile({ user }) {
 
         <div className="relative z-10">
           <h2 className="text-lg font-archive text-accent-yellow mb-4 border-b border-white/10 pb-2">Basics</h2>
-          
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 mb-6">
-            <div className="w-full md:w-1/3 text-xs font-mono uppercase text-muted tracking-wider">
-              Profile Photo
-            </div>
-            <div className="w-full md:w-2/3 flex items-center gap-4">
-              <div className="w-20 h-20 rounded-2xl flex-shrink-0 overflow-hidden cursor-pointer border-2 border-dashed border-white/10 hover:border-white/20 flex items-center justify-center transition-colors group bg-white/[0.03]" onClick={() => imgRef.current?.click()}>
-                {imagePreview || profile.image ? (
-                  <img src={imagePreview || profile.image} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="text-center">
-                    <div className="text-2xl opacity-20 group-hover:opacity-40 transition-opacity mb-0.5">📷</div>
-                  </div>
-                )}
-                <input ref={imgRef} type="file" accept="image/*" className="hidden" onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (!f) return;
-                  setImageFile(f);
-                  const r = new FileReader();
-                  r.onload = ev => setImagePreview(ev.target.result);
-                  r.readAsDataURL(f);
-                }} />
-              </div>
-              <div className="flex flex-col gap-2">
-                <button type="button" onClick={() => imgRef.current?.click()} className="text-xs font-mono bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded transition-colors">Change Photo</button>
-                {(imagePreview || profile.image) && (
-                  <button type="button" onClick={() => { setImageFile(null); setImagePreview(null); setProfile(p => ({...p, image: null})); }} className="text-xs font-mono text-red-500 hover:bg-red-500/10 px-3 py-1.5 rounded transition-colors">Remove Photo</button>
-                )}
-              </div>
-            </div>
-          </div>
-
           
           <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 mb-6">
             <div className="w-full md:w-1/3 text-xs font-mono uppercase text-muted tracking-wider">
@@ -367,13 +350,23 @@ export default function MyProfile({ user }) {
         </div>
 
         <div className="flex flex-col-reverse md:flex-row justify-between pt-4 mt-8 border-t border-white/10 relative z-10 gap-4">
-          <button
-            type="button"
-            onClick={() => window.location.href = '/'}
-            className="w-full md:w-auto border border-red-500/30 text-red-500/80 bg-red-500/10 font-bold px-8 py-3 rounded-xl hover:bg-red-500/20 transition-colors uppercase tracking-widest font-mono text-sm"
-          >
-            Logout
-          </button>
+          <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+            <button
+              type="button"
+              onClick={() => window.location.href = '/'}
+              className="w-full md:w-auto border border-red-500/30 text-red-500/80 bg-red-500/10 font-bold px-8 py-3 rounded-xl hover:bg-red-500/20 transition-colors uppercase tracking-widest font-mono text-sm"
+            >
+              Logout
+            </button>
+            <button
+              type="button"
+              onClick={handleDeleteProfile}
+              className="w-full md:w-auto border border-red-500/30 text-red-500/80 bg-red-500/10 font-bold px-8 py-3 rounded-xl hover:bg-red-500/20 transition-colors uppercase tracking-widest font-mono text-sm"
+              disabled={loading}
+            >
+              Delete Profile
+            </button>
+          </div>
           <button
             type="submit"
             disabled={loading}
