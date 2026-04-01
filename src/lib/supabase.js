@@ -173,7 +173,6 @@ export async function getStudents() {
   const { data, error } = await supabase
     .from('users')
     .select('*')
-    .eq('is_admin', false)
     .order('name')
   return { data, error }
 }
