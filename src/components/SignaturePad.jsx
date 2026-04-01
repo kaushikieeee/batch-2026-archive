@@ -17,7 +17,7 @@ export default function SignaturePad({ onSave, onClear }) {
 
   return (
     <div className="glass border border-accent-yellow/20 rounded-xl overflow-hidden relative group">
-      <div className="absolute top-2 right-2 flex gap-2 z-10 opacity-0 group-hover:opacity-100 transition duration-300">
+      <div className="absolute top-2 right-2 flex gap-2 z-10 transition duration-300">
         <button onClick={handleClear} className="bg-red-500/20 text-red-300 font-mono text-[9px] px-3 py-1 rounded-sm uppercase tracking-widest hover:bg-red-500/40 transition">
           Clear
         </button>

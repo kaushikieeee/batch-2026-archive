@@ -16,8 +16,8 @@ const ADMIN_NAV = { label: 'Admin', path: '/admin', icon: '⚑' }
 // Mobile bottom nav (Floating modern capsule)
 function MobileNav({ location, links }) {
   return (
-    <div className="fixed bottom-5 left-0 right-0 z-50 md:hidden flex justify-center px-4 pointer-events-none safe-area-pb">
-      <div className="flex items-center overflow-x-auto no-scrollbar w-full max-w-sm bg-[#111111]/85 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-1.5 shadow-[0_20px_40px_rgba(0,0,0,0.8)] pointer-events-auto justify-around">
+    <div className="fixed bottom-3 md:bottom-5 left-0 right-0 z-[100] md:hidden flex justify-center px-4 pointer-events-none safe-area-pb">
+      <div className="flex items-center overflow-x-auto no-scrollbar w-full max-w-[95%] bg-[#111111]/90 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-1 shadow-[0_10px_40px_rgba(0,0,0,0.8)] pointer-events-auto justify-evenly">
         {links.map(link => {
           const active = location.pathname === link.path
           return (

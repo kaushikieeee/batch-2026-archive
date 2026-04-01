@@ -142,10 +142,10 @@ export default function Slambook({ user }) {
 
   // STANDARD USER VIEW
   return (
-    <div className="pt-24 max-w-6xl mx-auto px-4 min-h-screen flex flex-col md:flex-row gap-6 relative">
+    <div className="pt-[100px] md:pt-24 pb-24 md:pb-0 max-w-6xl mx-auto px-4 min-h-[calc(100vh-80px)] flex flex-col md:flex-row gap-6 relative">
        
       {/* Sidebar - Users List */}
-      <div className="md:w-1/3 glass p-5 rounded-2xl flex flex-col h-[75vh] border border-white/5 relative z-10">
+      <div className={`md:w-1/3 glass p-5 rounded-2xl flex-col h-[75vh] border border-white/5 relative z-10 ${selectedUser ? 'hidden md:flex' : 'flex'}`}>
          <div className="flex justify-between items-end mb-5">
            <h2 className="font-archive text-3xl text-white">Slambook</h2>
            <div className="flex items-center gap-1.5 px-2 py-1 bg-green-500/10 rounded-full border border-green-500/20">
@@ -154,7 +154,7 @@ export default function Slambook({ user }) {
            </div>
          </div>
          {loading ? <p className="font-mono text-xs text-muted">Decoding graph...</p> : (
-           <div className="flex-1 overflow-y-auto space-y-2 pr-2 scrollbar-hide">
+           <div className="flex-1 overflow-y-auto space-y-2 pr-1 scrollbar-hide">
               {students.map(s => {
                 const isOnline = onlineUsers.some(ou => ou.id === s.id)
                 return (
@@ -180,15 +180,16 @@ export default function Slambook({ user }) {
       </div>
 
       {/* Chat Area */}
-      <div className="md:w-2/3 glass rounded-2xl flex flex-col h-[75vh] border border-white/5 relative z-10 overflow-hidden">
+      <div className={`md:w-2/3 glass rounded-2xl flex-col h-[75vh] border border-white/5 relative z-10 overflow-hidden ${!selectedUser ? 'hidden md:flex' : 'flex'}`}>
          {selectedUser ? (
            <>
               <div className="bg-white/[0.02] border-b border-white/5 p-4 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full overflow-hidden bg-black/20 border border-white/5">
+                  <button onClick={() => setSelectedUser(null)} className="md:hidden text-white/50 text-xl pl-1 pr-3 hover:text-white">←</button>
+                  <div className="w-12 h-12 rounded-full overflow-hidden bg-black/20 border border-white/5 flex-shrink-0">
                      {selectedUser.image ? <img src={selectedUser.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center">👤</div>}
                   </div>
-                  <div>
-                    <h3 className="font-archive text-2xl text-white leading-none">{selectedUser.name}</h3>
+                  <div className="min-w-0">
+                    <h3 className="font-archive text-2xl text-white leading-none truncate">{selectedUser.name}</h3>
                     <p className="font-mono text-[9px] text-accent-yellow uppercase tracking-widest mt-1">
                        {onlineUsers.some(ou => ou.id === selectedUser.id) ? 'Online Now' : 'Away'}
                     </p>

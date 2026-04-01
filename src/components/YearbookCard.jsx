@@ -81,10 +81,10 @@ function StudentModal({ student, onClose }) {
         <div className="h-1 mx-4 mt-2 sm:mt-0 rounded-full"
              style={{ background: accent.bg, boxShadow: `0 0 20px ${accent.glow}` }} />
 
-        <div className="p-5 md:p-7 h-[calc(94vh-18px)] overflow-y-auto">
-          {/* Close — desktop */}
+        <div className="p-5 md:p-7 h-[calc(94vh-18px)] overflow-y-auto relative">
+          {/* Close — universal */}
           <button onClick={onClose}
-            className="hidden sm:block absolute top-4 right-4 w-7 h-7 rounded-full glass
+            className="absolute top-4 right-4 z-50 w-7 h-7 rounded-full glass
                        text-muted hover:text-accent-yellow transition-colors font-mono text-sm
                        flex items-center justify-center">✕</button>
 
