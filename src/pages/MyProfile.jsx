@@ -261,7 +261,14 @@ export default function MyProfile({ user }) {
           </div>
         </div>
 
-        <div className="flex justify-end pt-4 mt-8 border-t border-white/10 relative z-10">
+        <div className="flex flex-col-reverse md:flex-row justify-between pt-4 mt-8 border-t border-white/10 relative z-10 gap-4">
+          <button
+            type="button"
+            onClick={() => window.location.href = '/'}
+            className="w-full md:w-auto border border-red-500/30 text-red-500/80 bg-red-500/10 font-bold px-8 py-3 rounded-xl hover:bg-red-500/20 transition-colors uppercase tracking-widest font-mono text-sm"
+          >
+            Logout
+          </button>
           <button
             type="submit"
             disabled={loading}

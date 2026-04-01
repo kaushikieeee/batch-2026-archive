@@ -41,7 +41,7 @@ function MobileNav({ location, links }) {
   )
 }
 
-export default function Navbar({ user }) {
+export default function Navbar({ user, onRefresh }) {
   const [scrolled, setScrolled] = useState(false)
   const location = useLocation()
   const isAdmin = isGodmodeUser(user)
@@ -102,7 +102,14 @@ export default function Navbar({ user }) {
           </div>
 
           {/* Right: User / year */}
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-1">
+            <button
+              onClick={onRefresh}
+              className="w-8 h-8 rounded-full bg-white/[0.03] hover:bg-white/[0.08] transition-colors flex items-center justify-center border border-white/[0.05]"
+              title="Refresh Data"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted hover:text-accent-yellow transition-colors"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l5.67-5.67"/></svg>
+            </button>
             <div className="flex items-center gap-2 px-3 py-1.5">
               <div className="w-5 h-5 rounded-full bg-accent-yellow/10 border border-accent-yellow/20
                               flex items-center justify-center">
@@ -129,7 +136,16 @@ export default function Navbar({ user }) {
         <Link to="/">
           <span className="font-archive text-xl text-accent-yellow text-glow-sm">TheArchive</span>
         </Link>
-        <div className="badge">2024–26</div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onRefresh}
+            className="w-8 h-8 rounded-full bg-white/[0.03] hover:bg-white/[0.08] transition-colors flex items-center justify-center border border-white/[0.05]"
+            title="Refresh Data"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted hover:text-accent-yellow transition-colors"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l5.67-5.67"/></svg>
+          </button>
+          <div className="badge">2024–26</div>
+        </div>
       </motion.div>
 
       {/* ── Mobile bottom nav ── */}

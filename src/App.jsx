@@ -24,11 +24,11 @@ const pv = {
   exit:    { opacity: 0, y: -8, filter: 'blur(4px)', transition: { duration: 0.18 } },
 }
 
-function AnimatedRoutes({ user }) {
+function AnimatedRoutes({ user, refreshKey }) {
   const loc = useLocation()
   return (
     <AnimatePresence mode="wait">
-      <motion.div key={loc.pathname} variants={pv} initial="initial" animate="enter" exit="exit" className="relative">
+      <motion.div key={loc.pathname + "-" + refreshKey} variants={pv} initial="initial" animate="enter" exit="exit" className="relative">
         <Routes location={loc}>
           <Route path="/"         element={<Home user={user} />}     />
           <Route path="/journey"  element={<Journey user={user} />}  />
@@ -61,6 +61,7 @@ function Footer() {
 function MainApp() {
   const [phase, setPhase] = useState('splash')
   const [user,  setUser]  = useState(null)
+  const [refreshKey, setRefreshKey] = useState(0)
   const navigate = useNavigate()
 
   /* Lenis smooth scroll */
@@ -101,9 +102,9 @@ function MainApp() {
           <motion.div key="app" initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ duration:0.6 }}
             className="relative min-h-screen flex flex-col bg-bg-primary">
             <Toaster position="top-center" toastOptions={{ style: { background: '#1c1c1c', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', fontFamily: 'monospace', fontSize: '11px', letterSpacing: '0.05em' }, success: { iconTheme: { primary: '#facc15', secondary: '#1c1c1c' } } }} />
-            <Navbar user={user} />
+            <Navbar user={user} onRefresh={() => setRefreshKey(k => k + 1)} />
             <div className="flex-1">
-              <AnimatedRoutes user={user} />
+              <AnimatedRoutes user={user} refreshKey={refreshKey} />
             </div>
             <Footer />
           </motion.div>
