@@ -67,8 +67,8 @@ function MainApp() {
   /* Lenis smooth scroll */
   useEffect(() => {
     const noMotion = window.matchMedia('(prefers-reduced-motion:reduce)').matches
-    const touch    = window.matchMedia('(hover:none) and (pointer:coarse)').matches
-    if (noMotion || touch) return
+    const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0
+    if (noMotion || isTouch) return
     const lenis = new Lenis({ duration:1.1, smoothWheel:true, wheelMultiplier:0.9 })
     let id
     const raf = t => { lenis.raf(t); id = requestAnimationFrame(raf) }

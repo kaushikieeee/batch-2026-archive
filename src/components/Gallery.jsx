@@ -84,7 +84,7 @@ function Lightbox({ items, index, onClose, onPrev, onNext }) {
                    text-muted hover:text-accent-yellow transition-colors font-mono text-xl z-10"
         aria-label="Next">→</button>
       <button onClick={onClose}
-        className="absolute top-5 right-5 text-muted hover:text-accent-yellow transition-colors font-mono text-lg z-10"
+        className="absolute top-4 right-4 md:top-6 md:right-6 w-12 h-12 bg-black/40 hover:bg-black/80 rounded-full text-white/90 hover:text-accent-yellow transition-all font-mono text-2xl z-[400] flex items-center justify-center backdrop-blur-md border border-white/10"
         aria-label="Close">✕</button>
       <div className="absolute top-5 left-1/2 -translate-x-1/2 font-mono text-[9px] tracking-widest text-muted/35">
         {index + 1} / {items.length}
