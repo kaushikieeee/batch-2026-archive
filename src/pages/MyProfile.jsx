@@ -1,5 +1,6 @@
 import { useState, useEffect, memo } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, uploadFile } from '../lib/supabase';
+import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
 import SignaturePad from '../components/SignaturePad';
@@ -40,6 +41,9 @@ const InputRow = memo(({ label, field, placeholder, type = "text", profile, togg
 export default function MyProfile({ user }) {
   const [loading, setLoading] = useState(true);
   const [customLinks, setCustomLinks] = useState([]);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const imgRef = useRef(null);
   const [profile, setProfile] = useState({
     name: '',
     email: '',
@@ -49,6 +53,11 @@ export default function MyProfile({ user }) {
     snapchat: '',
     website: '',
     signature_url: '',
+    section: '',
+    role: '',
+    quote: '',
+    bio: '',
+    image: null,
     visibility_preferences: {
       email: true,
       phone: true,
@@ -89,6 +98,11 @@ export default function MyProfile({ user }) {
           snapchat: data.snapchat || '',
           website: data.website || '',
           signature_url: data.signature_url || '',
+          section: data.section || '',
+          role: data.role || '',
+          quote: data.quote || '',
+          bio: data.bio || '',
+          image: data.image || null,
           visibility_preferences: {
             email: visPref.email ?? true,
             phone: visPref.phone ?? true,
@@ -133,6 +147,14 @@ export default function MyProfile({ user }) {
         visibility_preferences: profile.visibility_preferences,
         updated_at: new Date().toISOString()
       };
+
+      if (imageFile) {
+        const { data: uploadData, error: uploadErr } = await uploadFile(imageFile);
+        if (uploadErr) throw uploadErr;
+        if (uploadData) updates.image = uploadData.publicUrl;
+      } else if (profile.image === null) {
+        updates.image = null;
+      }
 
       const { error } = await supabase
         .from('users')
@@ -197,6 +219,70 @@ export default function MyProfile({ user }) {
 
         <div className="relative z-10">
           <h2 className="text-lg font-archive text-accent-yellow mb-4 border-b border-white/10 pb-2">Basics</h2>
+          
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 mb-6">
+            <div className="w-full md:w-1/3 text-xs font-mono uppercase text-muted tracking-wider">
+              Profile Photo
+            </div>
+            <div className="w-full md:w-2/3 flex items-center gap-4">
+              <div className="w-20 h-20 rounded-2xl flex-shrink-0 overflow-hidden cursor-pointer border-2 border-dashed border-white/10 hover:border-white/20 flex items-center justify-center transition-colors group bg-white/[0.03]" onClick={() => imgRef.current?.click()}>
+                {imagePreview || profile.image ? (
+                  <img src={imagePreview || profile.image} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="text-center">
+                    <div className="text-2xl opacity-20 group-hover:opacity-40 transition-opacity mb-0.5">📷</div>
+                  </div>
+                )}
+                <input ref={imgRef} type="file" accept="image/*" className="hidden" onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (!f) return;
+                  setImageFile(f);
+                  const r = new FileReader();
+                  r.onload = ev => setImagePreview(ev.target.result);
+                  r.readAsDataURL(f);
+                }} />
+              </div>
+              <div className="flex flex-col gap-2">
+                <button type="button" onClick={() => imgRef.current?.click()} className="text-xs font-mono bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded transition-colors">Change Photo</button>
+                {(imagePreview || profile.image) && (
+                  <button type="button" onClick={() => { setImageFile(null); setImagePreview(null); setProfile(p => ({...p, image: null})); }} className="text-xs font-mono text-red-500 hover:bg-red-500/10 px-3 py-1.5 rounded transition-colors">Remove Photo</button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 mb-6">
+            <div className="w-full md:w-1/3 text-xs font-mono uppercase text-muted tracking-wider">
+              Profile Photo
+            </div>
+            <div className="w-full md:w-2/3 flex items-center gap-4">
+              <div className="w-20 h-20 rounded-2xl flex-shrink-0 overflow-hidden cursor-pointer border-2 border-dashed border-white/10 hover:border-white/20 flex items-center justify-center transition-colors group bg-white/[0.03]" onClick={() => imgRef.current?.click()}>
+                {imagePreview || profile.image ? (
+                  <img src={imagePreview || profile.image} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="text-center">
+                    <div className="text-2xl opacity-20 group-hover:opacity-40 transition-opacity mb-0.5">📷</div>
+                  </div>
+                )}
+                <input ref={imgRef} type="file" accept="image/*" className="hidden" onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (!f) return;
+                  setImageFile(f);
+                  const r = new FileReader();
+                  r.onload = ev => setImagePreview(ev.target.result);
+                  r.readAsDataURL(f);
+                }} />
+              </div>
+              <div className="flex flex-col gap-2">
+                <button type="button" onClick={() => imgRef.current?.click()} className="text-xs font-mono bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded transition-colors">Change Photo</button>
+                {(imagePreview || profile.image) && (
+                  <button type="button" onClick={() => { setImageFile(null); setImagePreview(null); setProfile(p => ({...p, image: null})); }} className="text-xs font-mono text-red-500 hover:bg-red-500/10 px-3 py-1.5 rounded transition-colors">Remove Photo</button>
+                )}
+              </div>
+            </div>
+          </div>
+
           <InputRow profile={profile} toggleVisibility={toggleVisibility} handleChange={handleChange} label="Full Name" field="name" placeholder="John Doe" />
           <InputRow profile={profile} toggleVisibility={toggleVisibility} handleChange={handleChange} label="Section" field="section" placeholder="CSE-A" />
           <InputRow profile={profile} toggleVisibility={toggleVisibility} handleChange={handleChange} label="Class Role" field="role" placeholder="Student" />
