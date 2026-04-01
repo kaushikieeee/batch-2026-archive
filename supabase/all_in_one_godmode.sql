@@ -51,7 +51,7 @@ create table if not exists public.messages (
   id uuid primary key default gen_random_uuid(),
   name text not null default 'Anonymous',
   message text not null,
-  status text not null default 'pending',
+  status text not null default 'approved',
   reviewed_by text,
   reviewed_at timestamptz,
   created_at timestamptz not null default now()
@@ -94,7 +94,7 @@ create table if not exists public.student_messages (
   student_id uuid not null references public.users(id) on delete cascade,
   message text not null,
   author text,
-  status text not null default 'pending',
+  status text not null default 'approved',
   reviewed_by text,
   reviewed_at timestamptz,
   created_at timestamptz not null default now()
@@ -109,7 +109,7 @@ create table if not exists public.media (
   src text,
   caption text,
   aspect text not null default 'square',
-  status text not null default 'pending',
+  status text not null default 'approved',
   reviewed_by text,
   reviewed_at timestamptz,
   created_at timestamptz not null default now()
@@ -144,17 +144,17 @@ alter table if exists public.users
   add column if not exists updated_at timestamptz not null default now();
 
 alter table if exists public.messages
-  add column if not exists status text not null default 'pending',
+  add column if not exists status text not null default 'approved',
   add column if not exists reviewed_by text,
   add column if not exists reviewed_at timestamptz;
 
 alter table if exists public.media
-  add column if not exists status text not null default 'pending',
+  add column if not exists status text not null default 'approved',
   add column if not exists reviewed_by text,
   add column if not exists reviewed_at timestamptz;
 
 alter table if exists public.student_messages
-  add column if not exists status text not null default 'pending',
+  add column if not exists status text not null default 'approved',
   add column if not exists reviewed_by text,
   add column if not exists reviewed_at timestamptz;
 
