@@ -97,7 +97,7 @@ function StudentModal({ student, onClose }) {
                 ? <img src={student.image} alt={student.name} className="w-full h-full object-cover" />
                 : <span className="font-archive text-2xl md:text-3xl select-none"
                          style={{ color: accent.bg }}>
-                    {student.name.split(' ').map(n => n[0]).join('').slice(0,2)}
+                    {(student.name || 'AB').split(' ').map(n => n[0]).join('').slice(0,2)}
                   </span>
               }
             </div>
@@ -239,7 +239,7 @@ function StudentModal({ student, onClose }) {
                   <input type="text" value={msgText}
                     onChange={e => setMsgText(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && post()}
-                    placeholder={`Say something to ${student.name.split(' ')[0]}…`}
+                    placeholder={`Say something to ${(student.name || 'someone').split(' ')[0]}…`}
                     className="flex-1 bg-white/[0.04] border border-white/[0.07] focus:border-accent-yellow/35
                                text-text-primary font-body text-sm px-3 py-2.5 rounded-xl
                                placeholder:text-muted/30 outline-none transition-colors" />
@@ -303,7 +303,7 @@ export default function YearbookCard({ student }) {
                    style={{ background: `${accent.bg}12` }}>
                 <span className="font-archive text-5xl select-none transition-colors duration-500"
                       style={{ color: `${accent.bg}40` }}>
-                  {student.name.split(' ').map(n=>n[0]).join('').slice(0,2)}
+                  {(student.name || 'AB').split(' ').map(n=>n[0]).join('').slice(0,2)}
                 </span>
               </div>
             )

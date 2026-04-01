@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { getStudents, getDirectMessages, sendDirectMessage, subscribeToMessages, getAllDirectMessagesForAdmin, trackPresence } from '../lib/supabase'
+import { getStudents, getDirectMessages, sendDirectMessage, subscribeToMessages, getAllDirectMessagesForAdmin, trackPresence, getGroupMessages, sendGroupMessage, subscribeToGroupMessages } from '../lib/supabase'
 import toast from 'react-hot-toast'
 import ScrollReveal from '../components/ScrollReveal'
 
@@ -18,6 +18,7 @@ export default function Slambook({ user }) {
     if (!user ) return
     let presenceRoom;
     let sub;
+    let groupSub;
 
     const load = async () => {
       const { data } = await getStudents()
@@ -46,10 +47,14 @@ export default function Slambook({ user }) {
       sub = subscribeToMessages(user.id, (newMsg) => {
          loadMessagesCallback(newMsg)
       })
+      groupSub = subscribeToGroupMessages((newMsg) => {
+         loadMessagesCallback(newMsg)
+      })
     }
     
     return () => {
         if (sub) sub.unsubscribe()
+        if (groupSub) groupSub.unsubscribe()
         if (presenceRoom) presenceRoom.unsubscribe() 
     }
   }, [user])
@@ -57,12 +62,11 @@ export default function Slambook({ user }) {
   // Need a ref or similar if selectedUser changes, but simple approach:
   // Re-fetch when a new message arrives intended for us.
   const loadMessagesCallback = (newMsg) => {
-    // If we're currently chatting with the sender, just reload.
-    // In a real app we'd append to state, but fetching is fine for this scale.
-    toast(`New Slambook Message!`, { icon: '💌' })
-    // We can't access latest selectedUser easily inside the closure without refs, 
-    // so we'll just let the user click if they are on another chat, 
-    // or if they click the sender, it will fetch.
+    if (!newMsg.receiver_id) {
+       toast(`New Group Message!`, { icon: '🌍' })
+    } else {
+       toast(`New Slambook Message!`, { icon: '💌' })
+    }
   }
 
   // Effect to handle reloading when selected user changes
@@ -75,6 +79,11 @@ export default function Slambook({ user }) {
 
   const loadMessages = async (peerId) => {
     if (!user) return
+    if (peerId === 'group_chat') {
+      const { data } = await getGroupMessages()
+      if (data) setMessages(data)
+      return
+    }
     const { data } = await getDirectMessages(user.id, peerId)
     if (data) setMessages(data)
   }
@@ -95,13 +104,21 @@ export default function Slambook({ user }) {
     const optimisticMsg = {
         id: Math.random(),
         sender_id: user.id,
-        receiver_id: selectedUser.id,
+        receiver_id: selectedUser.id === 'group_chat' ? null : selectedUser.id,
         content: content,
         created_at: new Date().toISOString()
     }
     setMessages(prev => [...prev, optimisticMsg])
 
-    const { error } = await sendDirectMessage(user.id, selectedUser.id, content)
+    let error;
+    if (selectedUser.id === 'group_chat') {
+      const res = await sendGroupMessage(user.id, content)
+      error = res.error
+    } else {
+      const res = await sendDirectMessage(user.id, selectedUser.id, content)
+      error = res.error
+    }
+
     if (error) {
       toast.error('Failed to send.')
       // optionally remove optimistic message
@@ -155,6 +172,19 @@ export default function Slambook({ user }) {
          </div>
          {loading ? <p className="font-mono text-xs text-muted">Decoding graph...</p> : (
            <div className="flex-1 overflow-y-auto space-y-2 pr-1 scrollbar-hide">
+              <button 
+                onClick={() => handleSelectUser({id: 'group_chat', name: 'Batch 2026 Room', section: 'Global Hub'})} 
+                className={`w-full text-left p-3 rounded-xl transition flex items-center justify-between mb-2 ${selectedUser?.id === 'group_chat' ? 'bg-accent-yellow/20 border border-accent-yellow/50' : 'bg-white/5 border border-white/10 hover:bg-white/10'}`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#111] flex items-center justify-center text-xl border border-accent-yellow/30 shadow-[0_0_10px_rgba(255,215,0,0.1)]">🌍</div>
+                  <div>
+                    <div className={`text-sm font-bold ${selectedUser?.id === 'group_chat' ? 'text-accent-yellow' : 'text-white'}`}>Batch 2026 Room</div>
+                    <div className="text-accent-yellow/50 font-mono text-[9px] uppercase tracking-widest">Global Chat</div>
+                  </div>
+                </div>
+              </button>
+              
               {students.map(s => {
                 const isOnline = onlineUsers.some(ou => ou.id === s.id)
                 return (
@@ -198,11 +228,16 @@ export default function Slambook({ user }) {
               
               <div className="flex-1 overflow-y-auto p-5 space-y-4 flex flex-col">
                  {messages.length === 0 ? <div className="h-full flex flex-col items-center justify-center opacity-30"><span className="text-4xl mb-3">💌</span><p className="text-xs font-mono uppercase tracking-widest">No messages yet.</p></div> : null}
-                 {messages.map(m => {
+                 {messages.map((m, i) => {
                     const isMe = m.sender_id === user.id
+                    const senderObj = students.find(s => s.id === m.sender_id)
+                    const showSenderName = selectedUser.id === 'group_chat' && !isMe
                     return (
-                      <div key={m.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                      <div key={m.id || i} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                          <div className={`max-w-[75%] p-3.5 rounded-2xl ${isMe ? 'bg-accent-yellow text-black rounded-tr-[4px] shadow-[0_0_15px_rgba(244,196,48,0.15)]' : 'bg-white/[0.05] border border-white/10 text-white rounded-tl-[4px]'}`}>
+                            {showSenderName && senderObj && (
+                              <span className="text-[10px] font-bold text-accent-yellow block mb-1 opacity-80">{senderObj.name}</span>
+                            )}
                             <p className="text-sm font-body leading-relaxed">{m.content}</p>
                             <span className={`text-[8px] font-mono mt-2 block ${isMe ? 'text-black/40' : 'text-white/30'}`}>
                                {new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}

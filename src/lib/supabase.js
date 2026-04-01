@@ -345,6 +345,36 @@ export async function sendDirectMessage(senderId, receiverId, content) {
   return { data, error }
 }
 
+export async function getGroupMessages() {
+  const { data, error } = await supabase
+    .from('direct_messages')
+    .select('*')
+    .is('receiver_id', null)
+    .order('created_at', { ascending: true })
+  return { data, error }
+}
+
+export async function sendGroupMessage(senderId, content) {
+  const { data, error } = await supabase
+    .from('direct_messages')
+    .insert([{ sender_id: senderId, receiver_id: null, content }])
+    .select()
+  return { data, error }
+}
+
+export function subscribeToGroupMessages(callback) {
+  return supabase.channel(`group_chat`)
+    .on('postgres_changes', { 
+      event: 'INSERT', 
+      schema: 'public', 
+      table: 'direct_messages',
+      filter: 'receiver_id=is.null' 
+    }, payload => {
+       callback(payload.new)
+    })
+    .subscribe()
+}
+
 export async function getAllDirectMessagesForAdmin() {
   const { data, error } = await supabase
     .from('direct_messages')
