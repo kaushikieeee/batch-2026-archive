@@ -5,7 +5,7 @@ import YearbookCard from '../components/YearbookCard'
 import ProfileUploadModal from '../components/ProfileUploadModal'
 import { YearbookCardSkeleton } from '../components/Skeleton'
 import ScrollReveal, { StaggerReveal, StaggerChild } from '../components/ScrollReveal'
-import { getStudents, postStudent, uploadFile, updateUserProfile } from '../lib/supabase'
+import { getStudents, postStudent, uploadFile, updateUserProfile, deleteUserProfileData } from '../lib/supabase'
 
 const SECTIONS = ['All', 'CSE-A', 'CSE-B', 'CSE-C']
 
@@ -35,9 +35,30 @@ export default function Yearbook({ user }) {
      setShowUpload(true)
   }
 
+  const handleProfileDelete = async () => {
+    if (!user) return
+    const tid = toast.loading('Deleting your profile...')
+    try {
+      const { error } = await deleteUserProfileData(user.id)
+      if (error) throw error
+      toast.success('Profile wiped successfully', { id: tid })
+      setShowUpload(false)
+      setEditMode(false)
+      setEditProfileData(null)
+      await loadStudents()
+    } catch (err) {
+      toast.error('Failed to wipe profile: ' + err.message, { id: tid })
+    }
+  }
+
   const handleProfileSubmit = async (profileData) => {
     const tid = toast.loading('Uploading profile...')
     let imageUrl = editMode && editProfileData ? editProfileData.image : null
+
+    // If they explicitly removed the photo in edit mode
+    if (editMode && !profileData.imageFile && !profileData.imagePreview) {
+      imageUrl = null;
+    }
 
     if (profileData.imageFile) {
       toast.loading('Uploading photo to batchof2026 bucket...', { id: tid })
@@ -179,6 +200,11 @@ export default function Yearbook({ user }) {
           <ProfileUploadModal
             onClose={() => { setShowUpload(false); setEditMode(false); setEditProfileData(null); }}
             onSubmit={handleProfileSubmit}
+            onDelete={editMode ? () => {
+              if(window.confirm('Are you heavily sure you want to wipe your profile? This cannot be undone.')){
+                handleProfileDelete()
+              }
+            } : undefined}
             initialData={editMode ? editProfileData : null}
           />
         )}

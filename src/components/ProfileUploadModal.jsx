@@ -26,7 +26,7 @@ function Field({ label, required, error, children }) {
 
 const STEPS = ['Profile', 'Style', 'Socials', 'Signature']
 
-export default function ProfileUploadModal({ onClose, onSubmit, initialData }) {
+export default function ProfileUploadModal({ onClose, onSubmit, onDelete, initialData }) {
   const [step, setStep] = useState(0)
   const isEdit = !!initialData
   
@@ -164,18 +164,27 @@ export default function ProfileUploadModal({ onClose, onSubmit, initialData }) {
 
                   {/* Photo + name side by side */}
                   <div className="flex gap-3.5 items-start">
-                    <div className="w-20 h-20 rounded-2xl flex-shrink-0 overflow-hidden cursor-pointer
-                                    border-2 border-dashed border-white/10 hover:border-white/20
-                                    flex items-center justify-center transition-colors group bg-white/[0.03]"
-                         onClick={() => imgRef.current?.click()}>
-                      {form.imagePreview
-                        ? <img src={form.imagePreview} alt="" className="w-full h-full object-cover" />
-                        : <div className="text-center">
-                            <div className="text-2xl opacity-20 group-hover:opacity-40 transition-opacity mb-0.5">📷</div>
-                            <span className="font-mono text-[7px] text-muted/30">Photo</span>
-                          </div>
-                      }
-                      <input ref={imgRef} type="file" accept="image/*" className="hidden" onChange={handleImage} />
+                    <div className="relative">
+                      <div className="w-20 h-20 rounded-2xl flex-shrink-0 overflow-hidden cursor-pointer
+                                      border-2 border-dashed border-white/10 hover:border-white/20
+                                      flex items-center justify-center transition-colors group bg-white/[0.03]"
+                           onClick={() => imgRef.current?.click()}>
+                        {form.imagePreview
+                          ? <img src={form.imagePreview} alt="" className="w-full h-full object-cover" />
+                          : <div className="text-center">
+                              <div className="text-2xl opacity-20 group-hover:opacity-40 transition-opacity mb-0.5">📷</div>
+                              <span className="font-mono text-[7px] text-muted/30">Photo</span>
+                            </div>
+                        }
+                        <input ref={imgRef} type="file" accept="image/*" className="hidden" onChange={handleImage} />
+                      </div>
+                      {form.imagePreview && (
+                        <button type="button" 
+                          onClick={(e) => { e.stopPropagation(); set('image', null); set('imagePreview', null); }} 
+                          className="absolute -top-2 -right-2 bg-red-500/80 hover:bg-red-500 w-5 h-5 rounded-full text-white text-[10px] flex items-center justify-center shadow-lg transition-transform hover:scale-110">
+                          ✕
+                        </button>
+                      )}
                     </div>
                     <div className="flex-1 space-y-3">
                       <Field label="Full Name" required error={errors.name}>
@@ -373,8 +382,19 @@ export default function ProfileUploadModal({ onClose, onSubmit, initialData }) {
                 style={{ background: accent, color: form.accentColor==='rose'||form.accentColor==='violet' ? '#fff' : '#111' }}>
                 {submitting ? '···'
                   : step < STEPS.length-1 ? 'Next →'
-                  : 'Add to Archive ✦'}
+                  : isEdit ? 'Update Profile ✦' : 'Add to Archive ✦'}
               </motion.button>
+              
+              {isEdit && onDelete && (
+                <motion.button
+                  onClick={onDelete}
+                  disabled={submitting}
+                  whileHover={{ scale: submitting ? 1 : 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="flex-none px-4 py-3.5 rounded-xl font-mono text-[10px] tracking-widest uppercase text-red-500 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 transition-all disabled:opacity-50">
+                  Delete Profile
+                </motion.button>
+              )}
             </div>
           </div>
         )}

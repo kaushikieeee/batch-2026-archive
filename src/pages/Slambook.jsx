@@ -7,6 +7,7 @@ import ScrollReveal from '../components/ScrollReveal'
 export default function Slambook({ user }) {
   const [showIntro, setShowIntro] = useState(true)
   const [students, setStudents] = useState([])
+  const [showAdminView, setShowAdminView] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
   const [messages, setMessages] = useState([])
   const [adminMessages, setAdminMessages] = useState([])
@@ -27,8 +28,6 @@ export default function Slambook({ user }) {
       if (user.is_admin) {
         const { data: adminDms } = await getAllDirectMessagesForAdmin()
         if (adminDms) setAdminMessages(adminDms)
-        setLoading(false)
-        return; // Admins just see the override view.
       }
       setLoading(false)
     }
@@ -133,10 +132,10 @@ export default function Slambook({ user }) {
   }
 
   // OMNISCIENT ADMIN VIEW
-  if (user.is_admin) {
+  if (user.is_admin && showAdminView) {
     return (
       <div className="pt-24 max-w-5xl mx-auto px-4 min-h-screen">
-          <h1 className="text-4xl font-archive text-red-500 mb-2">Omniscient View</h1>
+          <div className="flex items-end justify-between mb-2"><h1 className="text-4xl font-archive text-red-500">Omniscient View</h1><button onClick={() => setShowAdminView(false)} className="text-xs font-mono bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg">Return to Slambook</button></div>
           <p className="text-muted/60 font-mono text-[10px] uppercase tracking-widest mb-8 border-b border-white/5 pb-4">Global Peer-to-Peer Intercept</p>
           <div className="space-y-3">
               {adminMessages.map(m => (

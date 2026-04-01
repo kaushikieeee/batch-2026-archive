@@ -194,6 +194,30 @@ export async function updateUserProfile(id, payload) {
   return { data, error }
 }
 
+export async function deleteUserProfileData(id) {
+  const defaultPayload = {
+    name: 'Anonymous Student',
+    section: null,
+    role: null,
+    quote: null,
+    bio: null,
+    phone: null,
+    instagram: null,
+    snapchat: null,
+    linkedin: null,
+    email: null,
+    image: null,
+    signature_url: null,
+    time_capsule: null,
+  };
+  const { data, error } = await supabase
+    .from('users')
+    .update(defaultPayload)
+    .eq('id', id)
+    .select()
+  return { data, error }
+}
+
 export async function changePassword(id, newPassword) {
   const { data, error } = await supabase
     .from('users')
