@@ -28,7 +28,7 @@ export default function Yearbook({ user }) {
   useEffect(() => { loadStudents() }, [])
 
   const openEditProfile = () => {
-     if (!user || user.is_admin) return toast.error("Admin accounts don't have personal profiles here.")
+     if (!user) return toast.error("Please login to edit your profile.")
      const myProfile = students.find(s => s.id === user.id) || user
      setEditProfileData(myProfile)
      setEditMode(true)

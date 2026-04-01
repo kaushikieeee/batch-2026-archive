@@ -22,7 +22,7 @@ export default function Slambook({ user }) {
 
     const load = async () => {
       const { data } = await getStudents()
-      if (data) setStudents(data.filter(s => s.id !== user.id && !s.is_admin))
+      if (data) setStudents(data.filter(s => s.id !== user.id))
       
       if (user.is_admin) {
         const { data: adminDms } = await getAllDirectMessagesForAdmin()
