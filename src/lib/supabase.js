@@ -152,12 +152,13 @@ export async function getMedia(year = null) {
   return { data, error }
 }
 
-export async function postMedia({ type, url, year }) {
+export async function postMedia({ type, url, year, caption }) {
   const { data, error } = await supabase
     .from('media')
     .insert([{
-      type: type || 'image',
-      url,
+      src: url,
+      caption: caption || '',
+      aspect: 'square',
       year: year || 'All',
       status: MOD_STATUS.APPROVED,
       reviewed_at: null,
