@@ -1,0 +1,4 @@
+supabase/all_in_one_godmode.sql.orig:298:-- Dummy User for testing
+supabase/all_in_one_godmode.sql.orig:301:values ('dummy', 'dummy123', 'Dummy User', 'CSE-A', 'Tester', false, true)
+supabase/all_in_one_godmode.sql:298:-- Dummy User for testing
+supabase/all_in_one_godmode.sql:301:values ('dummy', 'dummy123', 'Dummy User', 'CSE-A', 'Tester', false, true)

@@ -1,0 +1,49 @@
+{
+  "hash": "c886ee10",
+  "configHash": "3d02a84d",
+  "lockfileHash": "45aa7fa7",
+  "browserHash": "35e51b89",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/.pnpm/react@18.3.1/node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "72b5736b",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "d1944e1a",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/.pnpm/react-router-dom@6.30.3_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/react-router-dom/dist/index.js",
+      "file": "react-router-dom.js",
+      "fileHash": "c04cac88",
+      "needsInterop": false
+    },
+    "framer-motion": {
+      "src": "../../node_modules/.pnpm/framer-motion@11.18.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/framer-motion/dist/es/index.mjs",
+      "file": "framer-motion.js",
+      "fileHash": "8fdd7385",
+      "needsInterop": false
+    },
+    "lenis": {
+      "src": "../../node_modules/.pnpm/lenis@1.3.21_react@18.3.1/node_modules/lenis/dist/lenis.mjs",
+      "file": "lenis.js",
+      "fileHash": "e011344d",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-IM3RSAW5": {
+      "file": "chunk-IM3RSAW5.js"
+    },
+    "chunk-YF6YTEQP": {
+      "file": "chunk-YF6YTEQP.js"
+    },
+    "chunk-DC5AMYBS": {
+      "file": "chunk-DC5AMYBS.js"
+    }
+  }
+}
