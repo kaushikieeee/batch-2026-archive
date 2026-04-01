@@ -1,8 +1,41 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { supabase } from '../lib/supabase';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
 import SignaturePad from '../components/SignaturePad';
+
+const InputRow = memo(({ label, field, placeholder, type = "text", profile, toggleVisibility, handleChange }) => (
+  <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 mb-4">
+    <div className="w-full md:w-1/3 text-xs font-mono uppercase text-muted tracking-wider flex justify-between items-center">
+      <span>{label}</span>
+      {field !== 'name' && (
+        <button
+          type="button"
+          onClick={() => toggleVisibility(field)}
+          className={"text-[9px] px-2 py-0.5 rounded border transition-colors " + (profile.visibility_preferences[field] ? "border-accent-yellow/30 text-accent-yellow/80 hover:bg-accent-yellow/10" : "border-red-500/30 text-red-500/80 hover:bg-red-500/10")}
+        >
+          {profile.visibility_preferences[field] ? 'VISIBLE' : 'HIDDEN'}
+        </button>
+      )}
+    </div>
+    {type === "textarea" ? (
+      <textarea
+        value={profile[field] || ''}
+        onChange={(e) => handleChange(field, e.target.value)}
+        placeholder={placeholder}
+        className="w-full md:w-2/3 bg-black flex-1 border border-white/10 rounded px-3 py-2 text-sm text-primary font-mono focus:border-accent-yellow/50 focus:outline-none transition-colors min-h-[80px]"
+      />
+    ) : (
+      <input
+        type={type}
+        value={profile[field] || ''}
+        onChange={(e) => handleChange(field, e.target.value)}
+        placeholder={placeholder}
+        className="w-full md:w-2/3 bg-black flex-1 border border-white/10 rounded px-3 py-2 text-sm text-primary font-mono focus:border-accent-yellow/50 focus:outline-none transition-colors"
+      />
+    )}
+  </div>
+));
 
 export default function MyProfile({ user }) {
   const [loading, setLoading] = useState(true);
@@ -87,6 +120,10 @@ export default function MyProfile({ user }) {
       setLoading(true);
       const updates = {
         name: profile.name,
+        section: profile.section,
+        role: profile.role,
+        quote: profile.quote,
+        bio: profile.bio,
         phone: profile.phone,
         dob: profile.dob || null,
         instagram: profile.instagram,
@@ -142,30 +179,6 @@ export default function MyProfile({ user }) {
     );
   }
 
-  const InputRow = ({ label, field, placeholder, type = "text" }) => (
-    <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 mb-4">
-      <div className="w-full md:w-1/3 text-xs font-mono uppercase text-muted tracking-wider flex justify-between items-center">
-        <span>{label}</span>
-        {field !== 'name' && (
-          <button
-            type="button"
-            onClick={() => toggleVisibility(field)}
-            className={"text-[9px] px-2 py-0.5 rounded border transition-colors " + (profile.visibility_preferences[field] ? "border-accent-yellow/30 text-accent-yellow/80 hover:bg-accent-yellow/10" : "border-red-500/30 text-red-500/80 hover:bg-red-500/10")}
-          >
-            {profile.visibility_preferences[field] ? 'VISIBLE' : 'HIDDEN'}
-          </button>
-        )}
-      </div>
-      <input
-        type={type}
-        value={profile[field] || ''}
-        onChange={(e) => handleChange(field, e.target.value)}
-        placeholder={placeholder}
-        className="w-full md:w-2/3 bg-black flex-1 border border-white/10 rounded px-3 py-2 text-sm text-primary font-mono focus:border-accent-yellow/50 focus:outline-none transition-colors"
-      />
-    </div>
-  );
-
   return (
     <div className="pt-24 pb-20 px-4 md:px-8 max-w-4xl mx-auto min-h-screen">
       <motion.div
@@ -184,7 +197,9 @@ export default function MyProfile({ user }) {
 
         <div className="relative z-10">
           <h2 className="text-lg font-archive text-accent-yellow mb-4 border-b border-white/10 pb-2">Basics</h2>
-          <InputRow label="Full Name" field="name" placeholder="John Doe" />
+          <InputRow profile={profile} toggleVisibility={toggleVisibility} handleChange={handleChange} label="Full Name" field="name" placeholder="John Doe" />
+          <InputRow profile={profile} toggleVisibility={toggleVisibility} handleChange={handleChange} label="Section" field="section" placeholder="CSE-A" />
+          <InputRow profile={profile} toggleVisibility={toggleVisibility} handleChange={handleChange} label="Class Role" field="role" placeholder="Student" />
           <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 mb-4 opacity-70 cursor-not-allowed">
             <div className="w-full md:w-1/3 text-xs font-mono uppercase text-muted tracking-wider flex justify-between items-center">
               <span>Email (Read Only)</span>
@@ -203,14 +218,18 @@ export default function MyProfile({ user }) {
               className="w-full md:w-2/3 bg-black/50 flex-1 border border-white/10 rounded px-3 py-2 text-sm text-primary font-mono cursor-not-allowed"
             />
           </div>
-          <InputRow label="Phone" field="phone" placeholder="+1 234 567 8900" />
-          <InputRow label="Date of Birth" field="dob" type="date" placeholder="YYYY-MM-DD" />
+          <InputRow profile={profile} toggleVisibility={toggleVisibility} handleChange={handleChange} label="Phone" field="phone" placeholder="+1 234 567 8900" />
+          <InputRow profile={profile} toggleVisibility={toggleVisibility} handleChange={handleChange} label="Date of Birth" field="dob" type="date" placeholder="YYYY-MM-DD" />
         </div>
 
         <div className="relative z-10">
-          <h2 className="text-lg font-archive text-accent-yellow mb-4 border-b border-white/10 pb-2">Social Hub</h2>
-          <InputRow label="Instagram" field="instagram" placeholder="username" />
-          <InputRow label="Snapchat" field="snapchat" placeholder="username" />
+          <h2 className="text-lg font-archive text-accent-yellow mb-4 border-b border-white/10 pb-2 mt-8">About Me</h2>
+          <InputRow profile={profile} toggleVisibility={toggleVisibility} handleChange={handleChange} label="Yearbook Quote" field="quote" placeholder="Your iconic quote here..." />
+          <InputRow profile={profile} toggleVisibility={toggleVisibility} handleChange={handleChange} label="Bio" field="bio" type="textarea" placeholder="Tell everyone your story..." />
+          
+          <h2 className="text-lg font-archive text-accent-yellow mb-4 border-b border-white/10 pb-2 mt-8">Social Hub</h2>
+          <InputRow profile={profile} toggleVisibility={toggleVisibility} handleChange={handleChange} label="Instagram" field="instagram" placeholder="username" />
+          <InputRow profile={profile} toggleVisibility={toggleVisibility} handleChange={handleChange} label="Snapchat" field="snapchat" placeholder="username" />
 
           <div className="mt-6 mb-2 flex items-center justify-between">
             <label className="text-xs font-mono uppercase text-muted tracking-wider">Custom Links</label>
