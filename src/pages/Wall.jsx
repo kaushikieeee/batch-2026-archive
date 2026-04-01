@@ -84,7 +84,7 @@ export default function Wall() {
       return
     }
 
-    toast.success('Your note is up! Waiting for admin approval.', { id: toastId })
+    toast.success('Your note is up! Posted successfully.', { id: toastId })
     setName(''); setText('')
     setSubmitting(false)
     setSubmitted(true)
@@ -166,7 +166,7 @@ export default function Wall() {
               : submitting ? 'bg-accent-yellow/25 text-accent-yellow cursor-wait'
               :              'bg-accent-yellow text-bg-primary hover:bg-soft-yellow'
               }`}>
-              {submitted  ? '✓ Sent for admin approval'
+              {submitted  ? '✓ Posted.'
               : submitting ? <motion.span animate={{ opacity: [1, 0.4, 1] }} transition={{ duration: 0.9, repeat: Infinity }}>Posting···</motion.span>
               : 'Submit Note →'}
             </motion.button>

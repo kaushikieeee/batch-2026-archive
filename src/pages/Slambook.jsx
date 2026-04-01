@@ -15,7 +15,7 @@ export default function Slambook({ user }) {
   const [onlineUsers, setOnlineUsers] = useState([])
 
   useEffect(() => {
-    if (!user || user.id === 0) return
+    if (!user ) return
     let presenceRoom;
     let sub;
 
@@ -111,7 +111,7 @@ export default function Slambook({ user }) {
     }
   }
 
-  if (!user || user.id === 0) {
+  if (!user ) {
     return <div className="text-center py-40 font-mono text-muted">Please log in to use the Slambook.</div>
   }
 

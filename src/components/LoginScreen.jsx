@@ -422,15 +422,6 @@ export default function LoginScreen({ onLogin }) {
             {loading ? <span className="flex items-center justify-center gap-2"><motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1, repeat: Infinity }}>···</motion.span></span> : 'Enter Archive →'}
           </motion.button>
           
-          <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-muted/10" />
-            <span className="font-mono text-[9px] text-muted/30">or</span>
-            <div className="flex-1 h-px bg-muted/10" />
-          </div>
-
-          <button onClick={() => onLogin({ id: 0, username: 'guest' })} className="w-full py-3 font-mono text-[10px] tracking-widest text-muted/50 hover:text-muted transition-colors duration-300 uppercase border border-muted/10 hover:border-muted/20">
-            Continue as Guest
-          </button>
         </motion.div>
 
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }} className="text-center font-mono text-[8px] text-muted/25 tracking-widest mt-6 uppercase">

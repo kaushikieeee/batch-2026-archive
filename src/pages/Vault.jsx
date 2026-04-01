@@ -51,7 +51,7 @@ export default function Vault() {
     if (postErr) {
       toast.error('Failed to post: ' + postErr.message, { id: tid })
     } else {
-      toast.success('Photo submitted for admin approval!', { id: tid })
+      toast.success('Photo posted!', { id: tid })
       setUploadFileState(null)
       setShowUpload(false)
     }
@@ -112,8 +112,8 @@ export default function Vault() {
                           hover:border-accent-yellow/25 transition-colors duration-300 cursor-pointer">
             <div className="text-3xl mb-3 opacity-25">📤</div>
             <p className="font-archive text-xl text-text-primary/35 mb-2">Have photos from the batch?</p>
-            <p className="font-body text-sm text-muted/40 mb-5">Click here to upload. Media travels into a pending queue.</p>
-            <span className="badge cursor-pointer hover:border-accent-yellow/35 transition-colors">Admin approval required</span>
+            <p className="font-body text-sm text-muted/40 mb-5">Click here to upload. Share it instantly with the batch.</p>
+            <span className="badge cursor-pointer hover:border-accent-yellow/35 transition-colors">Instantly posted</span>
           </div>
         </ScrollReveal>
       </div>

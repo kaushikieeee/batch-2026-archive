@@ -28,7 +28,7 @@ export default function Yearbook({ user }) {
   useEffect(() => { loadStudents() }, [])
 
   const openEditProfile = () => {
-     if (!user || user.id === 0 || user.is_admin) return toast.error("Guest/Admin accounts don't have personal profiles here.")
+     if (!user || user.is_admin) return toast.error("Admin accounts don't have personal profiles here.")
      const myProfile = students.find(s => s.id === user.id) || user
      setEditProfileData(myProfile)
      setEditMode(true)
@@ -128,7 +128,7 @@ export default function Yearbook({ user }) {
               className="flex-1 sm:w-44 bg-white/[0.04] border border-white/[0.08] focus:border-accent-yellow/35
                          text-text-primary font-body text-sm px-4 py-2.5 rounded-xl
                          placeholder:text-muted/25 outline-none transition-colors" />
-            {(!user || user.id === 0 || user.is_admin) && (
+            {(!user || user.is_admin) && (
               <motion.button onClick={() => setShowUpload(true)}
                 whileHover={{ scale:1.04 }} whileTap={{ scale:0.96 }}
                 className="flex items-center gap-2 bg-accent-yellow text-bg-primary font-mono text-[10px]
