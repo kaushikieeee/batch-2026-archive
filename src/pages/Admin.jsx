@@ -1,3 +1,4 @@
+import YearbookCard from '../components/YearbookCard';
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
@@ -370,45 +371,59 @@ export default function Admin({ user }) {
                         {showPasswords ? u.password : '••••••••'}
                       </div>
                     </summary>
-                    <div className="px-4 pb-4 pt-1 ml-10 text-xs text-muted-foreground space-y-3">
-                      <div className="grid grid-cols-2 gap-4">
-                         <div>
-                           <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Quote & Bio</div>
-                           {u.quote && <div className="italic text-accent-yellow mb-1">"{u.quote}"</div>}
-                           {u.bio && <div>{u.bio}</div>}
-                           {!u.quote && !u.bio && <div className="text-white/20">Not provided</div>}
-                         </div>
-                         <div>
-                           <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Time Capsule</div>
-                           {u.time_capsule ? <div className="font-mono text-[10px] whitespace-pre-wrap">{u.time_capsule}</div> : <div className="text-white/20">No capsule sealed</div>}
-                         </div>
-                      </div>
-                      {(u.signature_url || u.email || u.phone || u.instagram || u.snapchat || u.website || u.linkedin || u.youtube || u.github || u.x_twitter) && (
-                        <div className="pt-2 border-t border-white/5 grid grid-cols-2 gap-4">
-                          <div>
-                            <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Socials & Contact</div>
-                            <div className="space-y-1 font-mono text-[10px] [&>div]:flex [&>div]:gap-2">
-                               {u.email && <div><span className="text-muted">EMAIL:</span>{u.email}</div>}
-                               {u.phone && <div><span className="text-muted">PHONE:</span>{u.phone}</div>}
-                               {u.instagram && <div><span className="text-muted">IG:</span>{u.instagram}</div>}
-                               {u.snapchat && <div><span className="text-muted">SNAP:</span>{u.snapchat}</div>}
-                               {u.linkedin && <div><span className="text-muted">IN:</span>{u.linkedin}</div>}
-                               {u.youtube && <div><span className="text-muted">YT:</span>{u.youtube}</div>}
-                               {u.github && <div><span className="text-muted">Git:</span>{u.github}</div>}
-                               {u.x_twitter && <div><span className="text-muted">X:</span>{u.x_twitter}</div>}
-                               {u.website && <div><span className="text-muted">Web:</span><span className="truncate max-w-[120px]">{u.website}</span></div>}
-                            </div>
+                    <div className="px-4 pb-4 pt-1 ml-10 text-xs text-muted-foreground">
+                      <div className="grid grid-cols-1 md:grid-cols-[1fr_200px] gap-6">
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-2 gap-4">
+                             <div>
+                               <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Quote & Bio</div>
+                               {u.quote && <div className="italic text-accent-yellow mb-1">"{u.quote}"</div>}
+                               {u.bio && <div>{u.bio}</div>}
+                               {!u.quote && !u.bio && <div className="text-white/20">Not provided</div>}
+                             </div>
+                             <div>
+                               <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Time Capsule</div>
+                               {u.time_capsule ? <div className="font-mono text-[10px] whitespace-pre-wrap">{u.time_capsule}</div> : <div className="text-white/20">No capsule sealed</div>}
+                             </div>
                           </div>
-                          <div>
-                            <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-2">Digital Signature</div>
-                            {u.signature_url ? (
-                              <div className="bg-white/5 p-2 rounded w-fit">
-                                <img src={u.signature_url} className="h-4 object-contain invert opacity-70" alt="signature" />
+                          {(u.signature_url || u.email || u.phone || u.instagram || u.snapchat || u.website || u.linkedin || u.youtube || u.github || u.x_twitter) && (
+                            <div className="pt-2 border-t border-white/5 grid grid-cols-2 gap-4">
+                              <div>
+                                <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Socials & Contact</div>
+                                <div className="space-y-1 font-mono text-[10px] [&>div]:flex [&>div]:gap-2">
+                                   {u.email && <div><span className="text-muted">EMAIL:</span>{u.email}</div>}
+                                   {u.phone && <div><span className="text-muted">PHONE:</span>{u.phone}</div>}
+                                   {u.instagram && <div><span className="text-muted">IG:</span>{u.instagram}</div>}
+                                   {u.snapchat && <div><span className="text-muted">SNAP:</span>{u.snapchat}</div>}
+                                   {u.linkedin && <div><span className="text-muted">IN:</span>{u.linkedin}</div>}
+                                   {u.youtube && <div><span className="text-muted">YT:</span>{u.youtube}</div>}
+                                   {u.github && <div><span className="text-muted">Git:</span>{u.github}</div>}
+                                   {u.x_twitter && <div><span className="text-muted">X:</span>{u.x_twitter}</div>}
+                                   {u.website && <div><span className="text-muted">Web:</span><span className="truncate max-w-[120px]">{u.website}</span></div>}
+                                </div>
                               </div>
-                            ) : <div className="text-white/20">No signature recorded</div>}
-                          </div>
+                              <div>
+                                <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-2">Digital Signature</div>
+                                {u.signature_url ? (
+                                  <div className="bg-white/5 p-2 rounded w-fit">
+                                    <img src={u.signature_url} className="h-4 object-contain invert opacity-70" alt="signature" />
+                                  </div>
+                                ) : <div className="text-white/20">No signature recorded</div>}
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      )}
+                        
+                        <div className="flex flex-col gap-2 border-l border-white/5 pl-6 pt-1">
+                           <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Public Profile</div>
+                           <div className="w-full max-w-[140px]">
+                              <YearbookCard student={{...u, accentColor: u.accent_color}} />
+                           </div>
+                           <div className="text-[9px] text-muted leading-tight max-w-[140px]">
+                              Click the card to open and preview the user's public modal.
+                           </div>
+                        </div>
+                      </div>
                     </div>
                   </details>
                 ))}
