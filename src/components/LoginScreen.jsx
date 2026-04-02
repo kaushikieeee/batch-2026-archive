@@ -45,7 +45,7 @@ export default function LoginScreen({ onLogin, adminPreviewUser, onExitPreview }
 
   useEffect(() => {
     if (isPreview && adminPreviewUser) {
-      setAuthUser(adminPreviewUser)
+      setAuthUser({ ...adminPreviewUser, must_change_password: true })
       setProfile(p => ({ ...p, name: adminPreviewUser.name, section: adminPreviewUser.section || p.section, role: adminPreviewUser.role || p.role, quote: adminPreviewUser.quote || p.quote, bio: adminPreviewUser.bio || p.bio }))
       setStep('INTRO_CINEMATIC')
     }
@@ -60,7 +60,7 @@ export default function LoginScreen({ onLogin, adminPreviewUser, onExitPreview }
         if (authUser?.personal_letter) {
           setStep('PERSONAL_LETTER')
         } else {
-          setStep('PASSWORD')
+          setStep(authUser?.must_change_password ? 'PASSWORD' : 'VIBE_CHECK')
         }
       }, 4500)
       return () => clearTimeout(interval)
@@ -89,14 +89,17 @@ export default function LoginScreen({ onLogin, adminPreviewUser, onExitPreview }
       return
     }
 
-    if (user.must_change_password) {
+    let vp = user.visibility_preferences || {};
+    if (typeof vp === 'string') { try { vp = JSON.parse(vp); } catch(e) { vp = {}; } }
+
+    const isFirstTime = user.must_change_password || !vp.has_completed_onboarding;
+
+    if (isFirstTime) {
       setAuthUser(user)
       if (user.name) setProfile(p => ({ ...p, name: user.name, section: user.section || p.section, role: user.role || p.role, quote: user.quote || p.quote, bio: user.bio || p.bio, phone: user.phone || p.phone, instagram: user.instagram || p.instagram, snapchat: user.snapchat || p.snapchat, email: user.email || p.email, image: user.image || p.image, signature_url: user.signature_url || p.signature_url, time_capsule: user.time_capsule || p.time_capsule }))
       try {
         if (user.website) setCustomLinks(JSON.parse(user.website))
       } catch(e) {}
-      let vp = user.visibility_preferences || {};
-      if (typeof vp === 'string') { try { vp = JSON.parse(vp); } catch(e) { vp = {}; } }
       setPrivacy({
         show_phone: vp.phone || false, 
         show_instagram: vp.instagram !== false, 
@@ -167,7 +170,8 @@ export default function LoginScreen({ onLogin, adminPreviewUser, onExitPreview }
         email: privacy.show_email,
         instagram: privacy.show_instagram,
         snapchat: privacy.show_snapchat,
-        website: privacy.show_linkedin
+        website: privacy.show_linkedin,
+        has_completed_onboarding: true
       }
     };
     const { error } = await updateUserProfile(authUser.id, payload)
@@ -250,7 +254,7 @@ export default function LoginScreen({ onLogin, adminPreviewUser, onExitPreview }
                      This letter is permanently sealed. It is uniquely generated for you and will never be rendered on this site again.
                    </p>
                  </div>
-                 <button onClick={() => setStep('PASSWORD')} className="shrink-0 w-full sm:w-auto font-mono text-xs sm:text-sm tracking-[0.2em] uppercase px-8 py-5 bg-[#1f1a17] text-[#f4f1ea] rounded hover:bg-[#000000] focus:ring-4 ring-[#8b4513]/20 transition-all hover:scale-105 shadow-2xl duration-300 active:scale-95">
+                 <button onClick={() => setStep(authUser?.must_change_password ? 'PASSWORD' : 'VIBE_CHECK')} className="shrink-0 w-full sm:w-auto font-mono text-xs sm:text-sm tracking-[0.2em] uppercase px-8 py-5 bg-[#1f1a17] text-[#f4f1ea] rounded hover:bg-[#000000] focus:ring-4 ring-[#8b4513]/20 transition-all hover:scale-105 shadow-2xl duration-300 active:scale-95">
                     I understand →
                  </button>
                </div>
@@ -284,7 +288,7 @@ export default function LoginScreen({ onLogin, adminPreviewUser, onExitPreview }
 
   if (step === 'VIBE_CHECK') {
     return (
-      <WizardLayout title="The Vibe Check" onNext={handleVibeCheckSubmit} onBack={() => setStep('PASSWORD')} nextText="Continue →" subtitle="Less boring forms, more personality">
+      <WizardLayout title="The Vibe Check" onNext={handleVibeCheckSubmit} onBack={() => setStep(authUser?.must_change_password ? 'PASSWORD' : (authUser?.personal_letter ? 'PERSONAL_LETTER' : 'INTRO_CINEMATIC'))} nextText="Continue →" subtitle="Less boring forms, more personality">
          <Input label="Your Campus Role" name="role" placeholder="e.g. Code Ninja, Coffee Addict" value={profile.role} onChange={e => handleChange(e, profile, setProfile)} />
          
          <div className="mb-4">
