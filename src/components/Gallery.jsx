@@ -17,12 +17,13 @@ const BG_MAP = {
 /* ── Lazy image or video that fades in once visible ── */
 function LazyImage({ src, alt }) {
   const ref   = useRef(null)
-  const shown = useInView(ref, { once: true, margin: '120px' })
+  const isVideo = typeof src === 'string' && (src.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/) || src.toLowerCase().includes('video'))
+  // Images load once and stay. Videos unload when out of view to save mobile RAM.
+  const shown = useInView(ref, { once: !isVideo, margin: '300px' })
   const [ok, setOk] = useState(false)
-  const isVideo = src?.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/) || src?.toLowerCase().includes('video')
 
   return (
-    <div ref={ref} className="absolute inset-0">
+    <div ref={ref} className="absolute inset-0 transition-colors bg-bg-secondary/10">
       {shown && (
         isVideo ? (
           <motion.video

@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
+import confetti from 'canvas-confetti'
 import Gallery from '../components/Gallery'
 import VaultSplash from '../components/VaultSplash'
 import ScrollReveal from '../components/ScrollReveal'
@@ -51,7 +52,8 @@ export default function Vault() {
     if (postErr) {
       toast.error('Failed to post: ' + postErr.message, { id: tid })
     } else {
-      toast.success('Photo posted!', { id: tid })
+      toast.success('Submitted for admin review!', { id: tid })
+      confetti({ particleCount: 150, zIndex: 9999, colors: ['#F4C430', '#FFFFFF', '#111111'] })
       setUploadFileState(null)
       setShowUpload(false)
     }

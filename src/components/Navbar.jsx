@@ -118,7 +118,7 @@ export default function Navbar({ user, onRefresh }) {
                 </span>
               </div>
               <span className="font-mono text-[9px] text-muted/50 tracking-wider">
-                @${user?.username}
+                @{user?.username}
               </span>
             </div>
           </div>

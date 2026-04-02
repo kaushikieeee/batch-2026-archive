@@ -7,6 +7,7 @@ import Navbar from './components/Navbar'
 import Splash from './components/Splash'
 import LoginScreen from './components/LoginScreen'
 import MusicPlayer from './components/MusicPlayer'
+import ScrollToTop from './components/ScrollToTop'
 import Home from './pages/Home'
 import Journey from './pages/Journey'
 import Yearbook from './pages/Yearbook'
@@ -118,6 +119,7 @@ function MainApp() {
 export default function App() {
   return (
     <BrowserRouter future={{ v7_startTransition:true, v7_relativeSplatPath:true }}>
+      <ScrollToTop />
       <MainApp />
     </BrowserRouter>
   )

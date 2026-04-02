@@ -14,7 +14,13 @@ export default function BirthdayWidget() {
         today.setHours(0, 0, 0, 0)
         
         const withDobs = data
-          .filter(d => d.dob && d.visibility_preferences?.dob !== false)
+          .filter(d => {
+            if (!d.dob) return false
+            let vp = d.visibility_preferences || {}
+            if (typeof vp === 'string') { try { vp = JSON.parse(vp) } catch(e) { vp = {} } }
+            if (vp.dob === false) return false
+            return true
+          })
           .map(student => {
             const dobParts = student.dob.split('-')
             if (dobParts.length !== 3) return null

@@ -15,6 +15,11 @@ export default function Slambook({ user }) {
   const [loading, setLoading] = useState(true)
   const [onlineUsers, setOnlineUsers] = useState([])
   const messagesEndRef = useRef(null)
+  const selectedUserRef = useRef(selectedUser)
+
+  useEffect(() => {
+    selectedUserRef.current = selectedUser
+  }, [selectedUser])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -32,7 +37,7 @@ export default function Slambook({ user }) {
 
     const load = async () => {
       const { data } = await getStudents()
-      if (data) setStudents(data.filter(s => s.id !== user.id))
+      if (data) setStudents(data.filter(s => String(s.id) !== String(user.id)))
       
       if (user.is_admin) {
         const { data: adminDms } = await getAllDirectMessagesForAdmin()
@@ -70,10 +75,24 @@ export default function Slambook({ user }) {
   // Need a ref or similar if selectedUser changes, but simple approach:
   // Re-fetch when a new message arrives intended for us.
   const loadMessagesCallback = (newMsg) => {
+    if (newMsg.sender_id === user.id) return // Handled by optimistic UI
+
+    const currentPeer = selectedUserRef.current
     if (!newMsg.receiver_id) {
-       toast(`New Group Message!`, { icon: '🌍' })
+       if (currentPeer?.id === 'group_chat') {
+           setMessages(prev => [...prev, newMsg])
+       } else {
+           toast(`New Group Message!`, { icon: '🌍' })
+       }
     } else {
-       toast(`New Slambook Message!`, { icon: '💌' })
+       if (currentPeer && (currentPeer.id === newMsg.sender_id || currentPeer.id === newMsg.receiver_id)) {
+           setMessages(prev => {
+              if (prev.some(m => m.id === newMsg.id)) return prev;
+              return [...prev, newMsg]
+           })
+       } else {
+           toast(`New Slambook Message!`, { icon: '💌' })
+       }
     }
   }
 
@@ -234,43 +253,60 @@ export default function Slambook({ user }) {
                   </div>
               </div>
               
-              <div className="flex-1 overflow-y-auto p-5 space-y-4 flex flex-col">
-                 {messages.length === 0 ? <div className="h-full flex flex-col items-center justify-center opacity-30"><span className="text-4xl mb-3">💌</span><p className="text-xs font-mono uppercase tracking-widest">No messages yet.</p></div> : null}
+              <div 
+                 className="flex-1 overflow-y-auto p-5 space-y-4 flex flex-col"
+                 style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E")` }}
+              >
+                 {messages.length === 0 ? <div className="h-full flex flex-col items-center justify-center opacity-30"><span className="text-4xl mb-3">💌</span><p className="text-xs font-mono uppercase tracking-widest text-white">No messages yet.</p></div> : null}
                  {messages.map((m, i) => {
-                    const isMe = m.sender_id === user.id
-                    const senderObj = students.find(s => s.id === m.sender_id)
-                    const showSenderName = selectedUser.id === 'group_chat' && !isMe
+                    const isMe = String(m.sender_id) === String(user.id)
+                    const senderObj = isMe ? user : students.find(s => String(s.id) === String(m.sender_id))
+                    const showSenderAvatar = selectedUser.id === 'group_chat' && !isMe
                     return (
-                      <div key={m.id || i} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                         <div className={`max-w-[75%] p-3.5 rounded-2xl ${isMe ? 'bg-accent-yellow text-black rounded-tr-[4px] shadow-[0_0_15px_rgba(244,196,48,0.15)]' : 'bg-white/[0.05] border border-white/10 text-white rounded-tl-[4px]'}`}>
-                            {showSenderName && senderObj && (
-                              <span className="text-[10px] font-bold text-accent-yellow block mb-1 opacity-80">{senderObj.name}</span>
-                            )}
-                            <p className="text-sm font-body leading-relaxed">{m.content}</p>
-                            <span className={`text-[8px] font-mono mt-2 block ${isMe ? 'text-black/40' : 'text-white/30'}`}>
-                               {new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                            </span>
+                      <motion.div 
+                         initial={{ opacity: 0, y: 10, scale: 0.98 }} 
+                         animate={{ opacity: 1, y: 0, scale: 1 }} 
+                         transition={{ duration: 0.2 }}
+                         key={m.id || i} 
+                         className={`flex gap-3 w-full ${isMe ? 'justify-end' : 'justify-start'}`}
+                      >
+                         {showSenderAvatar && (
+                           <div className="w-8 h-8 rounded-full overflow-hidden bg-black/40 flex-shrink-0 border border-white/5 shadow-md self-end mb-1">
+                              {senderObj?.image ? <img src={senderObj.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[10px]">👤</div>}
+                           </div>
+                         )}
+                         <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%]`}>
+                             {showSenderAvatar && senderObj && (
+                               <span className="text-[10px] font-bold text-accent-yellow block mb-1 pl-1 opacity-80">{senderObj.name}</span>
+                             )}
+                             <div className={`p-4 rounded-2xl relative inline-block ${isMe ? 'bg-accent-yellow text-black rounded-br-sm shadow-[0_4px_15px_rgba(244,196,48,0.25)]' : 'bg-[#18181b] border border-white/10 text-white rounded-bl-sm shadow-xl'}`}>
+                                <p className="text-sm font-body leading-relaxed whitespace-pre-wrap">{m.content}</p>
+                             </div>
+                             <span className={`text-[9px] font-mono mt-1.5 opacity-40 px-1 ${isMe ? 'text-right' : 'text-left'}`}>
+                                {new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                             </span>
                          </div>
-                      </div>
+                      </motion.div>
                     )
                  })}
                  <div ref={messagesEndRef} />
               </div>
 
-              <form onSubmit={handleSend} className="p-4 bg-white/[0.01] border-t border-white/5 flex gap-2">
+              <form onSubmit={handleSend} className="p-4 bg-white/[0.01] border-t border-white/5 flex gap-3 items-center">
                  <input 
                     type="text" 
                     value={input} 
                     onChange={e=>setInput(e.target.value)} 
                     placeholder={`Message ${selectedUser.name}...`} 
-                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-sm text-white focus:outline-none focus:border-accent-yellow/50 transition-colors" 
+                    className="flex-1 bg-black/40 border border-white/10 rounded-full px-5 py-3 text-sm text-white focus:outline-none focus:border-accent-yellow/40 transition-colors shadow-inner" 
                  />
                  <button 
                     type="submit" 
                     disabled={!input.trim()} 
-                    className="bg-accent-yellow text-black px-6 rounded-xl font-bold font-mono text-[10px] tracking-widest uppercase hover:bg-yellow-400 hover:shadow-[0_0_15px_rgba(244,196,48,0.4)] transition-all disabled:opacity-50 disabled:hover:shadow-none"
+                    className="w-12 h-12 flex items-center justify-center rounded-full bg-accent-yellow text-black hover:bg-yellow-400 hover:scale-105 active:scale-95 hover:shadow-[0_0_20px_rgba(244,196,48,0.4)] transition-all disabled:opacity-50 disabled:scale-100 disabled:shadow-none shrink-0"
+                    title="Send Message"
                  >
-                    Send
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="translate-x-[-1px] translate-y-[1px]"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                  </button>
               </form>
            </>

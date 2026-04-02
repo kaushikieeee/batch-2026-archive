@@ -122,7 +122,7 @@ export default function Splash({ onEnter }) {
             >
               <div className="h-px flex-1 min-w-6 bg-muted/20" />
               <span className="font-mono text-[8px] tracking-[0.35em] text-muted/30 uppercase text-center whitespace-nowrap">
-                Memory Archive · Localhost Edition
+                Memory Archive · Final Build
               </span>
               <div className="h-px flex-1 min-w-6 bg-muted/20" />
             </motion.div>

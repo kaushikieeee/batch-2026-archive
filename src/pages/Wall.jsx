@@ -47,6 +47,8 @@ function WallNote({ message, index }) {
   )
 }
 
+import confetti from 'canvas-confetti'
+
 /* ── Page ── */
 export default function Wall() {
   const [messages,   setMessages]   = useState(mockMessages)
@@ -84,7 +86,8 @@ export default function Wall() {
       return
     }
 
-    toast.success('Your note is up! Posted successfully.', { id: toastId })
+    toast.success('Submitted for admin review!', { id: toastId })
+    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#F4C430', '#FFD95A', '#FFFFFF'] })
     setName(''); setText('')
     setSubmitting(false)
     setSubmitted(true)
@@ -166,7 +169,7 @@ export default function Wall() {
               : submitting ? 'bg-accent-yellow/25 text-accent-yellow cursor-wait'
               :              'bg-accent-yellow text-bg-primary hover:bg-soft-yellow'
               }`}>
-              {submitted  ? '✓ Posted.'
+              {submitted  ? '✓ Submitted!'
               : submitting ? <motion.span animate={{ opacity: [1, 0.4, 1] }} transition={{ duration: 0.9, repeat: Infinity }}>Posting···</motion.span>
               : 'Submit Note →'}
             </motion.button>

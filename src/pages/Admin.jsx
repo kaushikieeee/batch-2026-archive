@@ -48,6 +48,29 @@ export default function Admin({ user }) {
   const [newUser, setNewUser] = useState({ username: '', password: '', name: '', section: '', role: '', dob: '', welcome_message: '', personal_letter: '' })
 
   const [showPasswords, setShowPasswords] = useState(false)
+  const [userSearch, setUserSearch] = useState('')
+
+  const filteredUsers = useMemo(() => {
+    if (!userSearch.trim()) return users;
+    const lower = userSearch.toLowerCase();
+    return users.filter(u => 
+      u.username?.toLowerCase().includes(lower) ||
+      u.name?.toLowerCase().includes(lower) ||
+      u.section?.toLowerCase().includes(lower)
+    );
+  }, [users, userSearch]);
+
+  const downloadUsersCSV = () => {
+    const headers = ['Username', 'Name', 'Section', 'Role', 'Password']
+    const rows = filteredUsers.map(u => [u.username, u.name || '', u.section || '', u.role || '', showPasswords ? u.password : '***'])
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'users_backup.csv'
+    a.click()
+  }
 
   const counts = useMemo(() => ({
     pendingMessages: messages.filter(x => x.status === MOD_STATUS.PENDING).length,
@@ -365,13 +388,25 @@ export default function Admin({ user }) {
             </div>
 
             <div className="glass border border-white/10 rounded-2xl overflow-hidden">
+              <div className="flex items-center justify-between p-4 border-b border-white/10 flex-wrap gap-4">
+                 <input 
+                   type="text"
+                   value={userSearch}
+                   onChange={e => setUserSearch(e.target.value)}
+                   placeholder="Search users..."
+                   className="bg-bg-primary border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-accent-yellow/40 w-full md:w-64"
+                 />
+                 <button onClick={downloadUsersCSV} className="font-mono text-[10px] uppercase tracking-wider text-green-200 border border-green-500/30 rounded-full px-3 py-1 bg-green-500/10 hover:bg-green-500/20 transition-colors">
+                    Export CSV
+                 </button>
+              </div>
               <div className="grid grid-cols-12 px-4 py-3 border-b border-white/10 font-mono text-[10px] uppercase tracking-widest text-muted/70">
                 <div className="col-span-1">#</div>
                 <div className="col-span-5">Username</div>
                 <div className="col-span-6">Password</div>
               </div>
-              <div className="max-h-[500px] overflow-auto">
-                {users.map((u, idx) => (
+              <div className="max-h-[500px] overflow-auto relative">
+                {filteredUsers.map((u, idx) => (
                   <details key={u.id} className="group border-b border-white/[0.04]">
                     <summary className="grid grid-cols-12 px-4 py-3 text-sm cursor-pointer hover:bg-white/[0.02]">
                       <div className="col-span-1 text-muted flex items-center gap-2">
@@ -408,6 +443,21 @@ export default function Admin({ user }) {
                                {u.time_capsule ? <div className="font-mono text-[10px] whitespace-pre-wrap">{u.time_capsule}</div> : <div className="text-white/20">No capsule sealed</div>}
                              </div>
                           </div>
+                          
+                          {u.personal_letter && (
+                            <div className="pt-4 border-t border-white/5">
+                              <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-3">Onboarding Letter Design Preview</div>
+                              <div className="bg-bg-secondary/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden max-w-sm">
+                                {/* Decorative tape/pin */}
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-4 bg-white/5 -translate-y-1/2 rotate-2 backdrop-blur-3xl shadow-sm z-20" />
+                                <h3 className="font-handwritten text-2xl text-accent-yellow mb-4">A letter for you...</h3>
+                                <div className="font-body text-sm text-text-primary/90 leading-relaxed whitespace-pre-wrap">
+                                   {u.personal_letter}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
                           {(u.signature_url || u.email || u.phone || u.instagram || u.snapchat || u.website || u.linkedin || u.youtube || u.github || u.x_twitter) && (
                             <div className="pt-2 border-t border-white/5 grid grid-cols-2 gap-4">
                               <div>
