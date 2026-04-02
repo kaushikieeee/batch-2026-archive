@@ -481,28 +481,45 @@ export default function Admin({ user }) {
                 </div>
               </div>
 
-              <div className="glass border border-white/10 rounded-2xl p-5 flex flex-col items-center justify-center relative overflow-hidden">
+              <div className="glass border border-white/10 rounded-2xl p-5 flex flex-col relative overflow-hidden min-h-[400px]">
                 <div className="w-full h-full absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-accent-yellow/10 via-bg-primary/50 to-bg-primary -z-10"></div>
-                <h2 className="font-archive text-xl text-text-primary/70 mb-6 absolute top-5 left-5 z-10">Live Preview</h2>
+                <h2 className="font-archive text-xl text-text-primary/70 mb-6 relative z-10 shrink-0">First-time Login Preview</h2>
                 
-                <div className="w-full max-w-[200px] mt-8 group">
-                  <YearbookCard 
-                    student={{
-                      username: newUser.username || 'username',
-                      name: newUser.name || 'Student Name',
-                      section: newUser.section || 'SEC-X',
-                      role: newUser.role || 'Member',
-                      accentColor: 'yellow',
-                      quote: 'This is a live preview of the yearbook card.',
-                      badge: '✨',
-                      image: null
-                    }} 
-                    disableInteractions={true}
-                  />
+                <div className="flex-1 flex flex-col justify-center gap-6 relative z-10 overflow-y-auto pr-2 custom-scrollbar">
+                  {newUser.welcome_message ? (
+                    <motion.div initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} className="w-full flex flex-col items-center">
+                       <h2 className="text-xl md:text-3xl font-archive text-accent-yellow tracking-wide text-center drop-shadow-[0_0_15px_rgba(244,196,48,0.5)]">
+                         {newUser.welcome_message}
+                       </h2>
+                       <div className="text-[10px] uppercase font-mono text-muted/50 tracking-widest mt-4 text-center">
+                         Cinematic Welcome Message (Fades in over 3s)
+                       </div>
+                    </motion.div>
+                  ) : !newUser.personal_letter && (
+                    <div className="text-center font-mono text-xs text-muted/50 border border-white/5 bg-white/5 p-4 rounded-xl border-dashed">
+                      Enter a "Welcome Message" or "Personal Letter" to see the onboarding preview here.
+                    </div>
+                  )}
+
+                  {newUser.personal_letter && (
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full">
+                       <div className="bg-bg-secondary/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl relative">
+                         {/* Decorative tape/pin */}
+                         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-4 bg-white/5 -translate-y-1/2 rotate-2 backdrop-blur-3xl shadow-sm z-20" />
+                         
+                         <h3 className="font-handwritten text-2xl text-accent-yellow mb-4">A letter for you...</h3>
+                         <div className="font-body text-sm text-text-primary/90 leading-relaxed whitespace-pre-wrap max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
+                           {newUser.personal_letter}
+                         </div>
+                       </div>
+                       <div className="mt-4 flex justify-end">
+                         <div className="font-mono text-[9px] tracking-widest uppercase px-3 py-1.5 bg-accent-yellow text-bg-primary rounded-lg opacity-70">
+                            Continue →
+                         </div>
+                       </div>
+                    </motion.div>
+                  )}
                 </div>
-                <p className="mt-6 font-mono text-[10px] uppercase tracking-widest text-muted/50 text-center px-4">
-                  Fields will update instantly.<br/>Modal preview disabled here.
-                </p>
               </div>
             </div>
 
