@@ -1,4 +1,5 @@
 import YearbookCard from '../components/YearbookCard';
+import LoginScreen from '../components/LoginScreen';
 import { useEffect, useMemo, useState, memo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-hot-toast'
@@ -32,7 +33,7 @@ function StatusPill({ status }) {
   )
 }
 
-const UserRow = memo(function UserRow({ idx, u, showPasswords, handleResetPassword, handleDeleteUser, user }) {
+const UserRow = memo(function UserRow({ idx, u, showPasswords, handleResetPassword, handleDeleteUser, user, onPreviewOnboarding }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -81,12 +82,35 @@ const UserRow = memo(function UserRow({ idx, u, showPasswords, handleResetPasswo
               
               {u.personal_letter && (
                 <div className="pt-4 border-t border-white/5">
-                  <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-3">Onboarding Letter Design Preview</div>
-                  <div className="bg-[#f9f7f1] rounded-sm p-6 max-w-sm shadow-[0_10px_30px_rgba(0,0,0,0.3),inset_0_0_30px_rgba(139,69,19,0.05)] relative overflow-visible">
-                    <div className="absolute top-[-6px] left-1/2 -translate-x-1/2 w-20 h-5 bg-[#e8e4d9] opacity-90 rotate-[-2deg] shadow-sm z-20" style={{ clipPath: 'polygon(2% 0, 100% 4%, 98% 100%, 0 96%)' }} />
-                    <h3 className="font-handwritten text-2xl text-[#5c4033] mb-4 mt-2 mix-blend-multiply">A letter for you...</h3>
-                    <div className="font-body text-sm text-[#2c2825] leading-relaxed whitespace-pre-wrap mix-blend-multiply">
-                       {u.personal_letter}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="text-[10px] text-muted/60 uppercase tracking-widest">Onboarding Letter Design Preview</div>
+                      <button onClick={() => onPreviewOnboarding(u)} className="px-3 py-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded font-mono text-[9px] uppercase tracking-widest text-accent-yellow transition-colors">
+                         Fullscreen Flow 📺
+                      </button>
+                    </div>
+                    <div className="bg-[#f4f1ea] rounded p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.8),inset_0_0_80px_rgba(139,69,19,0.06)] relative border border-[#e3dcc8] max-w-sm">
+                      <div className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-28 h-6 bg-[#e8e4d5] opacity-90 rotate-[-1.5deg] shadow-sm z-20 backdrop-blur-sm border border-[#dfdacc]" style={{ clipPath: 'polygon(1% 0, 99% 3%, 99% 98%, 0 96%)' }} />
+                      <div className="absolute bottom-[-8px] right-6 w-16 h-5 bg-[#e8e4d5] opacity-80 rotate-[4deg] shadow-sm z-20 backdrop-blur-sm border border-[#dfdacc]" style={{ clipPath: 'polygon(0 4%, 98% 0, 100% 96%, 3% 100%)' }} />
+
+                      <div className="absolute top-4 right-4 w-12 h-12 border-[2px] border-[#8b4513] rounded-full opacity-[0.06] flex items-center justify-center rotate-[-15deg] pointer-events-none">
+                        <span className="font-archive text-[10px] text-[#8b4513] uppercase tracking-widest mt-0.5">2026</span>
+                      </div>
+
+                      <h3 className="font-handwritten text-2xl text-[#3b2a1a] mb-5 mt-2 mix-blend-multiply relative z-10 drop-shadow-sm">A letter from the developer</h3>
+                      <div className="font-body text-xs text-[#2a221b] leading-[2.1] whitespace-pre-wrap break-words overflow-x-hidden mix-blend-multiply relative z-10">
+                         {u.personal_letter}
+                      </div>
+
+                      <div className="mt-8 pt-4 border-t-[1.5px] border-dashed border-[#8b4513]/20 relative z-10">
+                        <div className="flex flex-col gap-3">
+                          <div className="flex items-start gap-2 p-2 bg-[#8b4513]/[0.04] rounded-lg border border-[#8b4513]/10">
+                            <span className="text-xs mt-0.5 opacity-80">📸</span>
+                            <p className="font-mono text-[7px] sm:text-[8px] text-[#5c4033]/80 uppercase tracking-widest leading-loose text-left">
+                              <strong className="block mb-0.5 text-[#3b2a1a]">Screenshot this now.</strong>
+                              This letter is permanently sealed. It is uniquely generated for you and will never be rendered on this site again.
+                            </p>
+                          </div>
+                        </div>
                     </div>
                   </div>
                 </div>
@@ -162,6 +186,8 @@ export default function Admin({ user }) {
 
   const [showPasswords, setShowPasswords] = useState(false)
   const [userSearch, setUserSearch] = useState('')
+  const [previewAuthUser, setPreviewAuthUser] = useState(null)
+
 
   const filteredUsers = useMemo(() => {
     if (!userSearch.trim()) return users;
@@ -655,8 +681,7 @@ export default function Admin({ user }) {
                     showPasswords={showPasswords} 
                     handleResetPassword={handleResetPassword} 
                     handleDeleteUser={handleDeleteUser} 
-                    user={user}
-                  />
+                    user={user}                    onPreviewOnboarding={(u) => setPreviewAuthUser(u)}                  />
                 ))}
                 {users.length === 0 && <div className="p-6 text-sm text-muted">No users found.</div>}
               </div>
@@ -770,6 +795,16 @@ export default function Admin({ user }) {
 
         {loading && <p className="mt-4 font-mono text-xs text-muted/60">Syncing with database...</p>}
       </div>
+
+      {previewAuthUser && (
+        <div className="fixed inset-0 z-[100] bg-black">
+          <LoginScreen 
+            adminPreviewUser={previewAuthUser} 
+            onExitPreview={() => setPreviewAuthUser(null)} 
+          />
+        </div>
+      )}
+
     </main>
   )
 }

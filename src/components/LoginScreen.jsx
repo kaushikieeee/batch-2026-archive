@@ -5,7 +5,9 @@ import SignaturePad from './SignaturePad'
 import { loginUser, changePassword, updateUserProfile, uploadFile } from '../lib/supabase'
 import { YearbookSkeleton } from './Skeleton' // useful for 3d look
 
-export default function LoginScreen({ onLogin }) {
+export default function LoginScreen({ onLogin, adminPreviewUser, onExitPreview }) {
+  const isPreview = !!adminPreviewUser
+
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
@@ -40,6 +42,14 @@ export default function LoginScreen({ onLogin }) {
   const [privacy, setPrivacy] = useState({
     show_phone: false, show_instagram: true, show_snapchat: true, show_email: false, show_linkedin: true
   })
+
+  useEffect(() => {
+    if (isPreview && adminPreviewUser) {
+      setAuthUser(adminPreviewUser)
+      setProfile(p => ({ ...p, name: adminPreviewUser.name, section: adminPreviewUser.section || p.section, role: adminPreviewUser.role || p.role, quote: adminPreviewUser.quote || p.quote, bio: adminPreviewUser.bio || p.bio }))
+      setStep('INTRO_CINEMATIC')
+    }
+  }, [isPreview, adminPreviewUser])
 
   // Cinematic Typing State
   const introMessage = authUser ? `Hello ${authUser.name || authUser.username}, ${authUser.welcome_message || 'Welcome to the archive.'}` : ''
@@ -105,6 +115,8 @@ export default function LoginScreen({ onLogin }) {
     if (newPass.length < 6) return setError('Password must be at least 6 characters.')
     if (newPass !== confirmPass) return setError('Passwords do not match.')
     setError('')
+    if (isPreview) return setStep('VIBE_CHECK')
+    
     setLoading(true)
     const { error: err } = await changePassword(authUser.id, newPass)
     setLoading(false)
@@ -121,6 +133,8 @@ export default function LoginScreen({ onLogin }) {
   }
 
   const handleSocialsSubmit = async () => {
+    if (isPreview) return setStep('PRIVACY')
+    
     setLoading(true)
     let imageUrl = profile.image
     const tid = toast.loading('Uploading assets...')
@@ -139,6 +153,12 @@ export default function LoginScreen({ onLogin }) {
   }
 
   const handlePrivacySubmit = async () => {
+    if (isPreview) {
+      setStep('DONE')
+      setTimeout(() => onExitPreview && onExitPreview(), 1800)
+      return
+    }
+
     setLoading(true)
     const payload = {
       ...privacy,
