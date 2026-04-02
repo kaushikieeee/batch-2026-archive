@@ -17,6 +17,7 @@ import {
   reviewStudentMessage,
   deleteUser,
   passwordResetAdmin,
+  createUsersBulk,
 } from '../lib/supabase'
 
 const TABS = ['Users', 'Messages', 'Photos', 'Memos', 'Overview']
@@ -163,6 +164,41 @@ export default function Admin({ user }) {
       setError(err.message || 'Could not create user.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleBulkUpload = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setLoading(true)
+    setError('')
+    try {
+      const text = await file.text()
+      const lines = text.split('\n').filter(l => l.trim())
+      // simple CSV parsing: username,password,name,section,role
+      const rows = lines.slice(1).map(line => {
+        // Handle basic quoted strings or simple splits
+        const cols = line.match(/(?:\"([^\"]*)\")|([^\,]+)/g).map(c => c.replace(/^"|"$/g, '').trim())
+        return {
+          username: cols[0],
+          password: cols[1],
+          name: cols[2] || null,
+          section: cols[3] || null,
+          role: cols[4] || null,
+          must_change_password: true
+        }
+      }).filter(r => r.username && r.password)
+
+      if (!rows.length) throw new Error('No valid rows found to insert (needs username & password headers)')
+      const { error: err } = await createUsersBulk(rows)
+      if (err) throw err
+      await loadUsers()
+      alert(`Successfully imported ${rows.length} users!`)
+    } catch (err) {
+      setError(err.message || 'Failed to bulk import users.')
+    } finally {
+      setLoading(false)
+      e.target.value = '' // Reset input
     }
   }
 
@@ -412,6 +448,24 @@ export default function Admin({ user }) {
                 >
                   Create / reset godmode user
                 </button>
+
+                <div className="mt-8 pt-8 border-t border-white/10">
+                   <h2 className="font-archive text-xl text-text-primary mb-4">Bulk Import (CSV)</h2>
+                   <p className="font-body text-xs text-muted/70 mb-3">
+                     Need to onboard a whole class? Upload a CSV header with <code className="bg-bg-primary px-1 border border-white/10 rounded">username,password,name,section,role</code>
+                   </p>
+                   <div className="relative glass border border-white/20 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 disabled:opacity-50 transition w-full">
+                     <span className="font-mono text-xs uppercase tracking-widest text-accent-yellow mb-2 text-center pointer-events-none">Click or Drop CSV File</span>
+                     <span className="text-[10px] text-muted text-center pointer-events-none">Ignores the first row (headers)</span>
+                     <input 
+                       type="file" 
+                       accept=".csv"
+                       onChange={handleBulkUpload}
+                       disabled={loading}
+                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                     />
+                   </div>
+                </div>
               </div>
             </div>
 
