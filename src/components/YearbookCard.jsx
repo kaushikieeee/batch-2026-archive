@@ -283,18 +283,18 @@ function StudentModal({ student, onClose }) {
 }
 
 /* ── Card ──────────────────────────────────────────────── */
-export default function YearbookCard({ student }) {
+export default function YearbookCard({ student, disableInteractions }) {
   const [open, setOpen] = useState(false)
   const accent = ACCENT_COLORS[student.accentColor] || ACCENT_COLORS.yellow
 
   return (
     <>
       <motion.div
-        whileHover={{ y: -8, scale: 1.02 }}
-        whileTap={{ scale: 0.97 }}
+        whileHover={!disableInteractions ? { y: -8, scale: 1.02 } : {}}
+        whileTap={!disableInteractions ? { scale: 0.97 } : {}}
         transition={{ type: 'spring', stiffness: 280, damping: 22 }}
-        className="yearbook-card cursor-pointer group relative"
-        onClick={() => setOpen(true)}>
+        className={`yearbook-card relative ${!disableInteractions ? 'cursor-pointer group' : 'cursor-default'}`}
+        onClick={() => !disableInteractions && setOpen(true)}>
 
         {/* Photo container */}
         <div className="relative overflow-hidden rounded-2xl aspect-[3/4] mb-3 bg-bg-secondary">

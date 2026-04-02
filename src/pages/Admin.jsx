@@ -14,8 +14,7 @@ import {
   reviewMessage,
   reviewStudentMessage,
   deleteUser,
-  passwordResetAdmin,
-  createUsersBulk,
+  passwordResetAdmin
 } from '../lib/supabase'
 
 const TABS = ['Users', 'Messages', 'Photos', 'Memos', 'Overview']
