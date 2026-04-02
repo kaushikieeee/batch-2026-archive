@@ -347,15 +347,70 @@ export default function Admin({ user }) {
                 <div className="col-span-5">Username</div>
                 <div className="col-span-6">Password</div>
               </div>
-              <div className="max-h-[420px] overflow-auto">
+              <div className="max-h-[500px] overflow-auto">
                 {users.map((u, idx) => (
-                  <div key={u.id} className="grid grid-cols-12 px-4 py-3 border-b border-white/[0.04] text-sm">
-                    <div className="col-span-1 text-muted">{idx + 1}</div>
-                    <div className="col-span-5 font-mono text-text-primary">{u.username}</div>
-                    <div className="col-span-6 font-mono text-accent-yellow/90">
-                      {showPasswords ? u.password : '••••••••'}
+                  <details key={u.id} className="group border-b border-white/[0.04]">
+                    <summary className="grid grid-cols-12 px-4 py-3 text-sm cursor-pointer hover:bg-white/[0.02]">
+                      <div className="col-span-1 text-muted flex items-center gap-2">
+                        <span className="text-[8px] opacity-50 group-open:rotate-90 transition-transform">▶</span>
+                        {idx + 1}
+                      </div>
+                      <div className="col-span-5 flex items-center gap-3">
+                        {u.image ? (
+                          <img src={u.image} alt="" className="w-6 h-6 rounded-full object-cover border border-white/10" />
+                        ) : (
+                          <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[10px] text-muted font-mono">{u.username?.substring(0,2) || '??'}</div>
+                        )}
+                        <div>
+                          <div className="font-mono text-text-primary">{u.username}</div>
+                          {u.name && <div className="text-[9px] text-muted uppercase tracking-wider">{u.name} — {u.section || 'No'}</div>}
+                        </div>
+                      </div>
+                      <div className="col-span-6 font-mono text-accent-yellow/90 flex items-center">
+                        {showPasswords ? u.password : '••••••••'}
+                      </div>
+                    </summary>
+                    <div className="px-4 pb-4 pt-1 ml-10 text-xs text-muted-foreground space-y-3">
+                      <div className="grid grid-cols-2 gap-4">
+                         <div>
+                           <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Quote & Bio</div>
+                           {u.quote && <div className="italic text-accent-yellow mb-1">"{u.quote}"</div>}
+                           {u.bio && <div>{u.bio}</div>}
+                           {!u.quote && !u.bio && <div className="text-white/20">Not provided</div>}
+                         </div>
+                         <div>
+                           <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Time Capsule</div>
+                           {u.time_capsule ? <div className="font-mono text-[10px] whitespace-pre-wrap">{u.time_capsule}</div> : <div className="text-white/20">No capsule sealed</div>}
+                         </div>
+                      </div>
+                      {(u.signature_url || u.email || u.phone || u.instagram || u.snapchat || u.website || u.linkedin || u.youtube || u.github || u.x_twitter) && (
+                        <div className="pt-2 border-t border-white/5 grid grid-cols-2 gap-4">
+                          <div>
+                            <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Socials & Contact</div>
+                            <div className="space-y-1 font-mono text-[10px] [&>div]:flex [&>div]:gap-2">
+                               {u.email && <div><span className="text-muted">EMAIL:</span>{u.email}</div>}
+                               {u.phone && <div><span className="text-muted">PHONE:</span>{u.phone}</div>}
+                               {u.instagram && <div><span className="text-muted">IG:</span>{u.instagram}</div>}
+                               {u.snapchat && <div><span className="text-muted">SNAP:</span>{u.snapchat}</div>}
+                               {u.linkedin && <div><span className="text-muted">IN:</span>{u.linkedin}</div>}
+                               {u.youtube && <div><span className="text-muted">YT:</span>{u.youtube}</div>}
+                               {u.github && <div><span className="text-muted">Git:</span>{u.github}</div>}
+                               {u.x_twitter && <div><span className="text-muted">X:</span>{u.x_twitter}</div>}
+                               {u.website && <div><span className="text-muted">Web:</span><span className="truncate max-w-[120px]">{u.website}</span></div>}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-2">Digital Signature</div>
+                            {u.signature_url ? (
+                              <div className="bg-white/5 p-2 rounded w-fit">
+                                <img src={u.signature_url} className="h-4 object-contain invert opacity-70" alt="signature" />
+                              </div>
+                            ) : <div className="text-white/20">No signature recorded</div>}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  </details>
                 ))}
                 {users.length === 0 && <div className="p-6 text-sm text-muted">No users found.</div>}
               </div>
