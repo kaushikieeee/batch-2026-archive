@@ -83,10 +83,10 @@ const UserRow = memo(function UserRow({ idx, u, showPasswords, handleResetPasswo
               {u.personal_letter && (
                 <div className="pt-4 border-t border-white/5">
                   <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-3">Onboarding Letter Design Preview</div>
-                  <div className="bg-bg-secondary/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden max-w-sm">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-4 bg-white/5 -translate-y-1/2 rotate-2 backdrop-blur-3xl shadow-sm z-20" />
-                    <h3 className="font-handwritten text-2xl text-accent-yellow mb-4">A letter for you...</h3>
-                    <div className="font-body text-sm text-text-primary/90 leading-relaxed whitespace-pre-wrap">
+                  <div className="bg-[#f9f7f1] rounded-sm p-6 max-w-sm shadow-[0_10px_30px_rgba(0,0,0,0.3),inset_0_0_30px_rgba(139,69,19,0.05)] relative overflow-visible">
+                    <div className="absolute top-[-6px] left-1/2 -translate-x-1/2 w-20 h-5 bg-[#e8e4d9] opacity-90 rotate-[-2deg] shadow-sm z-20" style={{ clipPath: 'polygon(2% 0, 100% 4%, 98% 100%, 0 96%)' }} />
+                    <h3 className="font-handwritten text-2xl text-[#5c4033] mb-4 mt-2 mix-blend-multiply">A letter for you...</h3>
+                    <div className="font-body text-sm text-[#2c2825] leading-relaxed whitespace-pre-wrap mix-blend-multiply">
                        {u.personal_letter}
                     </div>
                   </div>
@@ -503,17 +503,17 @@ export default function Admin({ user }) {
 
                   {newUser.personal_letter && (
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full">
-                       <div className="bg-bg-secondary/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl relative">
+                       <div className="bg-[#f9f7f1] rounded-sm p-6 relative shadow-[0_10px_40px_rgba(0,0,0,0.5),inset_0_0_40px_rgba(139,69,19,0.05)] overflow-visible">
                          {/* Decorative tape/pin */}
-                         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-4 bg-white/5 -translate-y-1/2 rotate-2 backdrop-blur-3xl shadow-sm z-20" />
+                         <div className="absolute top-[-6px] left-1/2 -translate-x-1/2 w-20 h-6 bg-[#e8e4d9] opacity-90 rotate-[-2deg] shadow-sm z-20" style={{ clipPath: 'polygon(2% 0, 100% 4%, 98% 100%, 0 96%)' }} />
                          
-                         <h3 className="font-handwritten text-2xl text-accent-yellow mb-4">A letter for you...</h3>
-                         <div className="font-body text-sm text-text-primary/90 leading-relaxed whitespace-pre-wrap max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
+                         <h3 className="font-handwritten text-2xl text-[#5c4033] mb-5 mt-2 mix-blend-multiply">A letter for you...</h3>
+                         <div className="font-body text-sm text-[#2c2825] leading-relaxed whitespace-pre-wrap max-h-[300px] overflow-y-auto pr-2 mix-blend-multiply [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#5c4033]/20 [&::-webkit-scrollbar-thumb]:rounded-full">
                            {newUser.personal_letter}
                          </div>
                        </div>
                        <div className="mt-4 flex justify-end">
-                         <div className="font-mono text-[9px] tracking-widest uppercase px-3 py-1.5 bg-accent-yellow text-bg-primary rounded-lg opacity-70">
+                         <div className="font-mono text-[9px] tracking-widest uppercase px-3 py-1.5 bg-[#2c2825] text-[#f9f7f1] rounded-lg opacity-70">
                             Continue →
                          </div>
                        </div>

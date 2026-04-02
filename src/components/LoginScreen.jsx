@@ -200,19 +200,19 @@ export default function LoginScreen({ onLogin }) {
           <div className="w-[80vw] h-[80vw] max-w-[600px] max-h-[600px] rounded-full bg-accent-yellow/10 blur-[150px]" />
         </div>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 w-full max-w-lg">
-           <div className="bg-bg-secondary/40 backdrop-blur-xl border border-white/10 rounded-2xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
+           <div className="bg-[#f9f7f1] rounded-sm p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.5),inset_0_0_60px_rgba(139,69,19,0.05)] relative overflow-visible">
              
-             {/* Decorative tape/pin */}
-             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-white/5 -translate-y-3/4 rotate-2 backdrop-blur-3xl shadow-sm rotate-2 z-20" />
+             {/* Decorative tape */}
+             <div className="absolute top-[-12px] left-1/2 -translate-x-1/2 w-32 h-8 bg-[#e8e4d9] opacity-90 rotate-[-2deg] shadow-sm z-20" style={{ clipPath: 'polygon(2% 0, 100% 4%, 98% 100%, 0 96%)' }} />
 
-             <h3 className="font-handwritten text-4xl text-accent-yellow mb-6">A letter for you...</h3>
+             <h3 className="font-handwritten text-4xl text-[#5c4033] mb-8 mt-2 mix-blend-multiply">A letter for you...</h3>
              
-             <div className="font-body text-base md:text-lg text-text-primary/90 leading-relaxed space-y-4 whitespace-pre-wrap">
+             <div className="font-body text-base md:text-lg text-[#2c2825] leading-relaxed space-y-4 whitespace-pre-wrap mix-blend-multiply">
                 {authUser?.personal_letter}
              </div>
              
              <div className="mt-12 flex justify-end">
-               <button onClick={() => setStep('PASSWORD')} className="font-mono text-xs tracking-widest uppercase px-6 py-3 bg-accent-yellow text-bg-primary rounded-lg hover:bg-accent-yellow/90 transition-colors">
+               <button onClick={() => setStep('PASSWORD')} className="font-mono text-xs tracking-widest uppercase px-6 py-3 bg-[#2c2825] text-[#f9f7f1] rounded-lg hover:bg-black transition-colors shadow-xl">
                   Continue →
                </button>
              </div>
