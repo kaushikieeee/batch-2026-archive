@@ -459,7 +459,7 @@ export default function Admin({ user }) {
                       value={newUser.personal_letter}
                       onChange={e => setNewUser(p => ({ ...p, personal_letter: e.target.value }))}
                       placeholder="A long-form letter only this user will see during onboarding... (e.g. My dear friend...)"
-                      className="w-full bg-bg-primary border border-white/10 focus:border-accent-yellow/40 rounded-lg px-3 py-2 text-sm text-text-primary h-24 resize-y font-body whitespace-pre-wrap"
+                      className="w-full bg-bg-primary border border-white/10 focus:border-accent-yellow/40 rounded-lg px-3 py-3 text-sm text-text-primary min-h-[150px] h-32 md:h-48 resize-y font-body whitespace-pre-wrap leading-relaxed"
                     />
                   </div>
                   <div>
@@ -523,7 +523,7 @@ export default function Admin({ user }) {
 
                                 <h3 className="font-handwritten text-3xl text-[#3b2a1a] mb-5 mt-2 mix-blend-multiply relative z-10 drop-shadow-sm">A letter from the developer</h3>
                                 
-                                <div className="font-body text-sm text-[#2a221b] leading-[2.1] whitespace-pre-wrap break-words overflow-x-hidden max-h-[250px] overflow-y-auto pr-2 mix-blend-multiply relative z-10 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#5c4033]/20 [&::-webkit-scrollbar-thumb]:rounded-full">
+                                  <div className="font-body text-sm text-[#2a221b] leading-[2.1] whitespace-pre-wrap break-words overflow-x-hidden max-h-[60vh] sm:max-h-[500px] overflow-y-auto pr-3 mix-blend-multiply relative z-10 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#5c4033]/20 [&::-webkit-scrollbar-thumb]:rounded-full">
                                   {newUser.personal_letter}
                                 </div>
 
