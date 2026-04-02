@@ -126,9 +126,8 @@ function StudentModal({ student, onClose }) {
                   { label: 'Snapchat', val: student.snapchat ? `@${student.snapchat}` : '', id: 'snapchat' },
                   { label: 'Email', val: student.email, id: 'email', col2: true },
                 ].map(f => {
-                  const vis = typeof student.visibility_preferences === 'string' 
-                            ? JSON.parse(student.visibility_preferences)
-                            : (student.visibility_preferences || {});
+                  let vis = student.visibility_preferences || {};
+                  if (typeof vis === 'string') { try { vis = JSON.parse(vis); } catch(e) { vis = {}; } }
                   if (!f.val) return null; // Don't show empty fields
                   const isVisible = f.id ? vis[f.id] !== false : true;
                   return (
@@ -194,9 +193,8 @@ function StudentModal({ student, onClose }) {
                 {/* Social links */}
                   <div className="flex flex-wrap gap-2 mt-4">
                     {(() => {
-                      const vis = typeof student.visibility_preferences === 'string' 
-                                ? JSON.parse(student.visibility_preferences)
-                                : (student.visibility_preferences || {});
+                      let vis = student.visibility_preferences || {};
+                      if (typeof vis === 'string') { try { vis = JSON.parse(vis); } catch(e) { vis = {}; } }
                       
                       const links = [];
                       if (student.instagram && vis['instagram'] !== false) {

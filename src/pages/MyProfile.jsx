@@ -85,7 +85,7 @@ export default function MyProfile({ user }) {
       if (error) throw error;
       if (data) {
         let visPref = data.visibility_preferences;
-        if (typeof visPref === 'string') visPref = JSON.parse(visPref);
+        if (typeof visPref === 'string') { try { visPref = JSON.parse(visPref); } catch(e) { visPref = {}; } }
         visPref = visPref || {};
         
         setProfile({
