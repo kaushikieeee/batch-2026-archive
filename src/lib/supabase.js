@@ -117,15 +117,19 @@ export async function uploadFile(file, bucket = 'batchof2026') {
       maxWidthOrHeight: 1024,
       useWebWorker: true
     }
-    const compressedFile = await imageCompression(file, options)
     
-    const fileExt = compressedFile.name.split('.').pop() || 'jpg'
+    let fileToUpload = file;
+    if (file.type && file.type.startsWith('image/')) {
+       fileToUpload = await imageCompression(file, options);
+    }
+    
+    const fileExt = fileToUpload.name.split('.').pop() || 'jpg'
     const fileName = `${Math.random().toString(36).substring(7)}-${Date.now()}.${fileExt}`
     const filePath = `uploads/${fileName}`
 
     const { error: uploadError } = await supabase.storage
       .from(bucket)
-      .upload(filePath, compressedFile)
+      .upload(filePath, fileToUpload)
 
   if (uploadError) {
     return { data: null, error: uploadError }

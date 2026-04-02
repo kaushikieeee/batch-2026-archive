@@ -14,24 +14,37 @@ const BG_MAP = {
   '4th yr': 'from-amber-600/12',
 }
 
-/* ── Lazy image that fades in once visible ── */
+/* ── Lazy image or video that fades in once visible ── */
 function LazyImage({ src, alt }) {
   const ref   = useRef(null)
   const shown = useInView(ref, { once: true, margin: '120px' })
   const [ok, setOk] = useState(false)
+  const isVideo = src?.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/) || src?.toLowerCase().includes('video')
 
   return (
     <div ref={ref} className="absolute inset-0">
       {shown && (
-        <motion.img
-          src={src} alt={alt}
-          loading="lazy" decoding="async"
-          onLoad={() => setOk(true)}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: ok ? 1 : 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-700 ease-out"
-        />
+        isVideo ? (
+          <motion.video
+            src={src}
+            autoPlay muted loop playsInline
+            onLoadedData={() => setOk(true)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: ok ? 1 : 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-700 ease-out"
+          />
+        ) : (
+          <motion.img
+            src={src} alt={alt}
+            loading="lazy" decoding="async"
+            onLoad={() => setOk(true)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: ok ? 1 : 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-700 ease-out"
+          />
+        )
       )}
     </div>
   )
@@ -102,8 +115,9 @@ function Lightbox({ items, index, onClose, onPrev, onNext }) {
           onClick={e => e.stopPropagation()}
         >
           {item.src
-            ? <img src={item.src} alt={item.caption}
-                   className="w-full object-contain max-h-[74vh] rounded-sm" />
+            ? (item.src?.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/) || item.src?.toLowerCase().includes('video'))
+              ? <video src={item.src} autoPlay controls loop playsInline className="w-full object-contain max-h-[74vh] rounded-sm" />
+              : <img src={item.src} alt={item.caption} className="w-full object-contain max-h-[74vh] rounded-sm" />
             : (
               <div className={`w-full ${ASPECT_HEIGHTS[item.aspect] || 'pb-[75%]'} relative bg-bg-secondary rounded-sm overflow-hidden`}>
                 <Placeholder item={item} />

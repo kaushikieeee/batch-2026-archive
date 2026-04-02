@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getStudents, getDirectMessages, sendDirectMessage, subscribeToMessages, getAllDirectMessagesForAdmin, trackPresence, getGroupMessages, sendGroupMessage, subscribeToGroupMessages } from '../lib/supabase'
 import toast from 'react-hot-toast'
@@ -14,6 +14,15 @@ export default function Slambook({ user }) {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(true)
   const [onlineUsers, setOnlineUsers] = useState([])
+  const messagesEndRef = useRef(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
 
   useEffect(() => {
     if (!user ) return
@@ -245,6 +254,7 @@ export default function Slambook({ user }) {
                       </div>
                     )
                  })}
+                 <div ref={messagesEndRef} />
               </div>
 
               <form onSubmit={handleSend} className="p-4 bg-white/[0.01] border-t border-white/5 flex gap-2">
