@@ -194,28 +194,48 @@ export default function LoginScreen({ onLogin }) {
 
   if (step === 'PERSONAL_LETTER') {
     return (
-      <div className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#111111] p-4">
-        {/* Glow */}
+      <div className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#0d0d0d] p-4 sm:p-8 overflow-y-auto overflow-x-hidden">
+        {/* Aesthetic Background Effect */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[80vw] h-[80vw] max-w-[600px] max-h-[600px] rounded-full bg-accent-yellow/10 blur-[150px]" />
+          <div className="w-[120vw] h-[120vw] max-w-[1000px] max-h-[1000px] rounded-full bg-accent-yellow/5 blur-[150px] opacity-70" />
         </div>
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 w-full max-w-lg">
-           <div className="bg-[#f9f7f1] rounded-sm p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.5),inset_0_0_60px_rgba(139,69,19,0.05)] relative overflow-visible">
+        
+        <motion.div initial={{ opacity: 0, y: 40, rotate: -2 }} animate={{ opacity: 1, y: 0, rotate: 0 }} transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }} className="relative w-full max-w-2xl my-8 mx-auto z-10 flex shrink-0">
+           
+           {/* The Paper */}
+           <div className="w-full bg-[#f4f1ea] rounded p-8 sm:p-12 md:p-16 shadow-[0_30px_80px_rgba(0,0,0,0.8),inset_0_0_120px_rgba(139,69,19,0.06)] relative border border-[#e3dcc8]">
              
-             {/* Decorative tape */}
-             <div className="absolute top-[-12px] left-1/2 -translate-x-1/2 w-32 h-8 bg-[#e8e4d9] opacity-90 rotate-[-2deg] shadow-sm z-20" style={{ clipPath: 'polygon(2% 0, 100% 4%, 98% 100%, 0 96%)' }} />
+             {/* Decorative tape / pushpin */}
+             <div className="absolute top-[-14px] left-1/2 -translate-x-1/2 w-40 h-10 bg-[#e8e4d5] opacity-90 rotate-[-1.5deg] shadow-sm z-20 backdrop-blur-sm border border-[#dfdacc]" style={{ clipPath: 'polygon(1% 0, 99% 3%, 99% 98%, 0 96%)' }} />
+             <div className="absolute bottom-[-12px] right-8 w-24 h-8 bg-[#e8e4d5] opacity-80 rotate-[4deg] shadow-sm z-20 backdrop-blur-sm border border-[#dfdacc]" style={{ clipPath: 'polygon(0 4%, 98% 0, 100% 96%, 3% 100%)' }} />
 
-             <h3 className="font-handwritten text-4xl text-[#5c4033] mb-8 mt-2 mix-blend-multiply">A letter for you...</h3>
+             {/* Watermark */}
+             <div className="absolute top-10 right-10 w-24 h-24 border-4 border-[#8b4513] rounded-full opacity-[0.06] flex items-center justify-center rotate-[-15deg] pointer-events-none hidden sm:flex">
+                <span className="font-archive text-2xl text-[#8b4513] uppercase tracking-widest mt-1">2026</span>
+             </div>
+
+             <h3 className="font-handwritten text-4xl sm:text-5xl text-[#3b2a1a] mb-10 mt-6 mix-blend-multiply relative z-10 drop-shadow-sm">A letter from the developer</h3>
              
-             <div className="font-body text-base md:text-lg text-[#2c2825] leading-relaxed space-y-4 whitespace-pre-wrap mix-blend-multiply">
+             <div className="font-body text-base sm:text-lg text-[#2a221b] leading-[2.2] space-y-6 whitespace-pre-wrap mix-blend-multiply relative z-10 min-h-[150px]">
                 {authUser?.personal_letter}
              </div>
              
-             <div className="mt-12 flex justify-end">
-               <button onClick={() => setStep('PASSWORD')} className="font-mono text-xs tracking-widest uppercase px-6 py-3 bg-[#2c2825] text-[#f9f7f1] rounded-lg hover:bg-black transition-colors shadow-xl">
-                  Continue →
-               </button>
+             {/* Note Section */}
+             <div className="mt-16 pt-8 border-t-[1.5px] border-dashed border-[#8b4513]/20 relative z-10">
+               <div className="flex flex-col sm:flex-row items-center justify-between gap-8">
+                 <div className="flex-1 flex items-start gap-4 p-4 bg-[#8b4513]/[0.04] rounded-xl border border-[#8b4513]/10">
+                   <span className="text-xl mt-0.5 opacity-80">📸</span>
+                   <p className="font-mono text-[10px] sm:text-xs text-[#5c4033]/80 uppercase tracking-widest leading-loose text-left">
+                     <strong className="block mb-1 text-[#3b2a1a]">Screenshot this now.</strong>
+                     This letter is permanently sealed. It is uniquely generated for you and will never be rendered on this site again.
+                   </p>
+                 </div>
+                 <button onClick={() => setStep('PASSWORD')} className="shrink-0 w-full sm:w-auto font-mono text-xs sm:text-sm tracking-[0.2em] uppercase px-8 py-5 bg-[#1f1a17] text-[#f4f1ea] rounded hover:bg-[#000000] focus:ring-4 ring-[#8b4513]/20 transition-all hover:scale-105 shadow-2xl duration-300 active:scale-95">
+                    I understand →
+                 </button>
+               </div>
              </div>
+
            </div>
         </motion.div>
       </div>
