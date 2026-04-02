@@ -1,6 +1,7 @@
 import YearbookCard from '../components/YearbookCard';
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
+import { toast } from 'react-hot-toast'
 import {
   GODMODE_PASSWORD,
   GODMODE_USERNAME,
@@ -160,8 +161,10 @@ export default function Admin({ user }) {
       if (err) throw err
       setNewUser({ username: '', password: '', name: '', section: '', role: '', dob: '', welcome_message: '', personal_letter: '' })
       await loadUsers()
+      toast.success(`${newUser.username} has been successfully added.`)
     } catch (err) {
       setError(err.message || 'Could not create user.')
+      toast.error('Could not create user.')
     } finally {
       setLoading(false)
     }
@@ -193,9 +196,10 @@ export default function Admin({ user }) {
       const { error: err } = await createUsersBulk(rows)
       if (err) throw err
       await loadUsers()
-      alert(`Successfully imported ${rows.length} users!`)
+      toast.success(`Successfully imported ${rows.length} users!`, { icon: '🚀' })
     } catch (err) {
       setError(err.message || 'Failed to bulk import users.')
+      toast.error(err.message || 'Failed to bulk import users.')
     } finally {
       setLoading(false)
       e.target.value = '' // Reset input
@@ -209,8 +213,10 @@ export default function Admin({ user }) {
       const { error: err } = await ensureGodmodeUser()
       if (err) throw err
       await loadUsers()
+      toast.success('Godmode user created/reset successfully!', { icon: '👑' })
     } catch (err) {
       setError(err.message || 'Could not create/reset godmode user.')
+      toast.error('Failed to initialize godmode user.')
     } finally {
       setLoading(false)
     }
@@ -224,8 +230,10 @@ export default function Admin({ user }) {
       const { error: err } = await deleteUser(id)
       if (err) throw err
       await loadUsers()
+      toast.success(`${username} has been permanently deleted.`, { icon: '🗑️' })
     } catch (err) {
       setError(err.message || 'Could not delete user.')
+      toast.error('Could not delete user.')
     } finally {
       setLoading(false)
     }
@@ -240,9 +248,10 @@ export default function Admin({ user }) {
       const { error: err } = await passwordResetAdmin(id, newPwd.trim())
       if (err) throw err
       await loadUsers()
-      alert(`Password for ${username} reset successfully.`)
+      toast.success(`Password for ${username} reset successfully.`, { icon: '🔐' })
     } catch (err) {
       setError(err.message || 'Could not reset password.')
+      toast.error(err.message || 'Could not reset password.')
     } finally {
       setLoading(false)
     }
@@ -267,8 +276,10 @@ export default function Admin({ user }) {
         if (err) throw err
         await loadMemos()
       }
+      toast.success(`${type} has been ${status}.`)
     } catch (err) {
       setError(err.message || 'Moderation failed.')
+      toast.error('Moderation action failed.')
     } finally {
       setLoading(false)
     }
