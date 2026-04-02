@@ -1,5 +1,5 @@
 import YearbookCard from '../components/YearbookCard';
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, memo } from 'react'
 import { motion } from 'framer-motion'
 import { toast } from 'react-hot-toast'
 import {
@@ -33,6 +33,118 @@ function StatusPill({ status }) {
   )
 }
 
+const UserRow = memo(function UserRow({ idx, u, showPasswords, handleResetPassword, handleDeleteUser }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <details 
+      className="group border-b border-white/[0.04]"
+      onToggle={(e) => setIsOpen(e.currentTarget.open)}
+    >
+      <summary className="grid grid-cols-12 px-4 py-3 text-sm cursor-pointer hover:bg-white/[0.02]">
+        <div className="col-span-1 text-muted flex items-center gap-2">
+          <span className="text-[8px] opacity-50 group-open:rotate-90 transition-transform">▶</span>
+          {idx + 1}
+        </div>
+        <div className="col-span-5 flex items-center gap-3">
+          {u.image ? (
+            <img src={u.image} alt="" className="w-6 h-6 rounded-full object-cover border border-white/10" />
+          ) : (
+            <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[10px] text-muted font-mono">{u.username?.substring(0,2) || '??'}</div>
+          )}
+          <div>
+            <div className="font-mono text-text-primary">{u.username}</div>
+            {u.name && <div className="text-[9px] text-muted uppercase tracking-wider">{u.name} — {u.section || 'No'}</div>}
+          </div>
+        </div>
+        <div className="col-span-6 font-mono text-accent-yellow/90 flex items-center justify-between">
+          <span>{showPasswords ? u.password : '••••••••'}</span>
+          {u.is_admin && <span className="bg-red-500/20 text-red-200 border border-red-500/50 px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-bold">Admin</span>}
+        </div>
+      </summary>
+      
+      {isOpen && (
+        <div className="px-4 pb-4 pt-1 ml-10 text-xs text-muted-foreground">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_200px] gap-6">
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-4">
+                 <div>
+                   <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Quote & Bio</div>
+                   {u.quote && <div className="italic text-accent-yellow mb-1">"{u.quote}"</div>}
+                   {u.bio && <div>{u.bio}</div>}
+                   {!u.quote && !u.bio && <div className="text-white/20">Not provided</div>}
+                 </div>
+                 <div>
+                   <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Time Capsule</div>
+                   {u.time_capsule ? <div className="font-mono text-[10px] whitespace-pre-wrap">{u.time_capsule}</div> : <div className="text-white/20">No capsule sealed</div>}
+                 </div>
+              </div>
+              
+              {u.personal_letter && (
+                <div className="pt-4 border-t border-white/5">
+                  <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-3">Onboarding Letter Design Preview</div>
+                  <div className="bg-bg-secondary/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden max-w-sm">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-4 bg-white/5 -translate-y-1/2 rotate-2 backdrop-blur-3xl shadow-sm z-20" />
+                    <h3 className="font-handwritten text-2xl text-accent-yellow mb-4">A letter for you...</h3>
+                    <div className="font-body text-sm text-text-primary/90 leading-relaxed whitespace-pre-wrap">
+                       {u.personal_letter}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {(u.signature_url || u.email || u.phone || u.instagram || u.snapchat || u.website || u.linkedin || u.youtube || u.github || u.x_twitter) && (
+                <div className="pt-2 border-t border-white/5 grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Socials & Contact</div>
+                    <div className="space-y-1 font-mono text-[10px] [&>div]:flex [&>div]:gap-2">
+                       {u.email && <div><span className="text-muted">EMAIL:</span>{u.email}</div>}
+                       {u.phone && <div><span className="text-muted">PHONE:</span>{u.phone}</div>}
+                       {u.instagram && <div><span className="text-muted">IG:</span>{u.instagram}</div>}
+                       {u.snapchat && <div><span className="text-muted">SNAP:</span>{u.snapchat}</div>}
+                       {u.linkedin && <div><span className="text-muted">IN:</span>{u.linkedin}</div>}
+                       {u.youtube && <div><span className="text-muted">YT:</span>{u.youtube}</div>}
+                       {u.github && <div><span className="text-muted">Git:</span>{u.github}</div>}
+                       {u.x_twitter && <div><span className="text-muted">X:</span>{u.x_twitter}</div>}
+                       {u.website && <div><span className="text-muted">Web:</span><span className="truncate max-w-[120px]">{u.website}</span></div>}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-2">Digital Signature</div>
+                    {u.signature_url ? (
+                      <div className="bg-white/5 p-2 rounded w-fit">
+                        <img src={u.signature_url} className="h-4 object-contain invert opacity-70" alt="signature" />
+                      </div>
+                    ) : <div className="text-white/20">No signature recorded</div>}
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex flex-col gap-2 border-l border-white/5 pl-6 pt-1">
+               <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Public Profile</div>
+               <div className="w-full max-w-[140px]">
+                  {isOpen && <YearbookCard student={{...u, accentColor: u.accent_color}} disableInteractions={true} />}
+               </div>
+               <div className="text-[9px] text-muted leading-tight max-w-[140px]">
+                  Click the card to open and preview the user's public modal.
+               </div>
+
+               <div className="w-full pt-4 mt-auto">
+                  <div className="text-[10px] text-red-400/60 uppercase tracking-widest mb-2 border-t border-red-500/20 pt-2">Danger Zone (Admin Actions)</div>
+                  <div className="flex flex-col gap-2 w-full max-w-[140px]">
+                     <button onClick={() => handleResetPassword(u.id, u.username)} className="text-left w-full px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-mono bg-orange-500/10 text-orange-200 border border-orange-500/20 hover:bg-orange-500/20 transition-all text-center">Reset Pwd</button>
+                     <button onClick={() => handleDeleteUser(u.id, u.username)} disabled={u.is_admin} className="text-left w-full px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-mono bg-red-500/10 text-red-200 border border-red-500/20 hover:bg-red-500/20 transition-all text-center disabled:opacity-30 disabled:cursor-not-allowed">Delete User</button>
+                  </div>
+               </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </details>
+  );
+});
+
 export default function Admin({ user }) {
   const isAdmin = isGodmodeUser(user)
 
@@ -60,25 +172,6 @@ export default function Admin({ user }) {
       (u.section?.toLowerCase() || '').includes(lower)
     );
   }, [users, userSearch]);
-
-  const downloadUsersCSV = () => {
-    const headers = ['Username', 'Name', 'Section', 'Role', 'Password']
-    const rows = filteredUsers.map(u => [
-      `"${(u.username || '').replace(/"/g, '""')}"`,
-      `"${(u.name || '').replace(/"/g, '""')}"`,
-      `"${(u.section || '').replace(/"/g, '""')}"`,
-      `"${(u.role || '').replace(/"/g, '""')}"`,
-      `"${(showPasswords ? u.password : '***').replace(/"/g, '""')}"`
-    ])
-    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n')
-    const blob = new Blob([csvContent], { type: 'text/csv' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'users_backup.csv'
-    a.click()
-    URL.revokeObjectURL(url)
-  }
 
   const counts = useMemo(() => ({
     pendingMessages: messages.filter(x => x.status === MOD_STATUS.PENDING).length,
@@ -164,42 +257,6 @@ export default function Admin({ user }) {
       toast.error('Could not create user.')
     } finally {
       setLoading(false)
-    }
-  }
-
-  const handleBulkUpload = async (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setLoading(true)
-    setError('')
-    try {
-      const text = await file.text()
-      const lines = text.split('\n').filter(l => l.trim())
-      // simple CSV parsing: username,password,name,section,role
-      const rows = lines.slice(1).map(line => {
-        // Handle basic quoted strings or simple splits
-        const cols = line.match(/(?:\"([^\"]*)\")|([^\,]+)/g).map(c => c.replace(/^"|"$/g, '').trim())
-        return {
-          username: cols[0],
-          password: cols[1],
-          name: cols[2] || null,
-          section: cols[3] || null,
-          role: cols[4] || null,
-          must_change_password: true
-        }
-      }).filter(r => r.username && r.password)
-
-      if (!rows.length) throw new Error('No valid rows found to insert (needs username & password headers)')
-      const { error: err } = await createUsersBulk(rows)
-      if (err) throw err
-      await loadUsers()
-      toast.success(`Successfully imported ${rows.length} users!`, { icon: '🚀' })
-    } catch (err) {
-      setError(err.message || 'Failed to bulk import users.')
-      toast.error(err.message || 'Failed to bulk import users.')
-    } finally {
-      setLoading(false)
-      e.target.value = '' // Reset input
     }
   }
 
@@ -424,22 +481,28 @@ export default function Admin({ user }) {
                 </div>
               </div>
 
-              <div className="glass border border-white/10 rounded-2xl p-5">
-                   <h2 className="font-archive text-xl text-text-primary mb-4">Bulk Import (CSV)</h2>
-                   <p className="font-body text-xs text-muted/70 mb-3">
-                     Need to onboard a whole class? Upload a CSV header with <code className="bg-bg-primary px-1 border border-white/10 rounded">username,password,name,section,role</code>
-                   </p>
-                   <div className="relative glass border border-white/20 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 disabled:opacity-50 transition w-full">
-                     <span className="font-mono text-xs uppercase tracking-widest text-accent-yellow mb-2 text-center pointer-events-none">Click or Drop CSV File</span>
-                     <span className="text-[10px] text-muted text-center pointer-events-none">Ignores the first row (headers)</span>
-                     <input 
-                       type="file" 
-                       accept=".csv"
-                       onChange={handleBulkUpload}
-                       disabled={loading}
-                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                     />
-                   </div>
+              <div className="glass border border-white/10 rounded-2xl p-5 flex flex-col items-center justify-center relative overflow-hidden">
+                <div className="w-full h-full absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-accent-yellow/10 via-bg-primary/50 to-bg-primary -z-10"></div>
+                <h2 className="font-archive text-xl text-text-primary/70 mb-6 absolute top-5 left-5 z-10">Live Preview</h2>
+                
+                <div className="w-full max-w-[200px] mt-8 group">
+                  <YearbookCard 
+                    student={{
+                      username: newUser.username || 'username',
+                      name: newUser.name || 'Student Name',
+                      section: newUser.section || 'SEC-X',
+                      role: newUser.role || 'Member',
+                      accentColor: 'yellow',
+                      quote: 'This is a live preview of the yearbook card.',
+                      badge: '✨',
+                      image: null
+                    }} 
+                    disableInteractions={true}
+                  />
+                </div>
+                <p className="mt-6 font-mono text-[10px] uppercase tracking-widest text-muted/50 text-center px-4">
+                  Fields will update instantly.<br/>Modal preview disabled here.
+                </p>
               </div>
             </div>
 
@@ -465,9 +528,6 @@ export default function Admin({ user }) {
                    placeholder="Search users..."
                    className="bg-bg-primary border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-accent-yellow/40 w-full md:w-64"
                  />
-                 <button onClick={downloadUsersCSV} className="font-mono text-[10px] uppercase tracking-wider text-green-200 border border-green-500/30 rounded-full px-3 py-1 bg-green-500/10 hover:bg-green-500/20 transition-colors">
-                    Export CSV
-                 </button>
               </div>
               <div className="grid grid-cols-12 px-4 py-3 bg-white/5 border-b border-white/10 font-mono text-[10px] uppercase tracking-widest text-muted/70 sticky top-0 z-10 backdrop-blur-xl">
                 <div className="col-span-1">#</div>
@@ -476,106 +536,14 @@ export default function Admin({ user }) {
               </div>
               <div className="max-h-[500px] overflow-auto relative">
                 {filteredUsers.map((u, idx) => (
-                  <details key={u.id} className="group border-b border-white/[0.04]">
-                    <summary className="grid grid-cols-12 px-4 py-3 text-sm cursor-pointer hover:bg-white/[0.02]">
-                      <div className="col-span-1 text-muted flex items-center gap-2">
-                        <span className="text-[8px] opacity-50 group-open:rotate-90 transition-transform">▶</span>
-                        {idx + 1}
-                      </div>
-                      <div className="col-span-5 flex items-center gap-3">
-                        {u.image ? (
-                          <img src={u.image} alt="" className="w-6 h-6 rounded-full object-cover border border-white/10" />
-                        ) : (
-                          <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[10px] text-muted font-mono">{u.username?.substring(0,2) || '??'}</div>
-                        )}
-                        <div>
-                          <div className="font-mono text-text-primary">{u.username}</div>
-                          {u.name && <div className="text-[9px] text-muted uppercase tracking-wider">{u.name} — {u.section || 'No'}</div>}
-                        </div>
-                      </div>
-                      <div className="col-span-6 font-mono text-accent-yellow/90 flex items-center justify-between">
-                        <span>{showPasswords ? u.password : '••••••••'}</span>
-                        {u.is_admin && <span className="bg-red-500/20 text-red-200 border border-red-500/50 px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-bold">Admin</span>}
-                      </div>
-                    </summary>
-                    <div className="px-4 pb-4 pt-1 ml-10 text-xs text-muted-foreground">
-                      <div className="grid grid-cols-1 md:grid-cols-[1fr_200px] gap-6">
-                        <div className="space-y-3">
-                          <div className="grid grid-cols-2 gap-4">
-                             <div>
-                               <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Quote & Bio</div>
-                               {u.quote && <div className="italic text-accent-yellow mb-1">"{u.quote}"</div>}
-                               {u.bio && <div>{u.bio}</div>}
-                               {!u.quote && !u.bio && <div className="text-white/20">Not provided</div>}
-                             </div>
-                             <div>
-                               <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Time Capsule</div>
-                               {u.time_capsule ? <div className="font-mono text-[10px] whitespace-pre-wrap">{u.time_capsule}</div> : <div className="text-white/20">No capsule sealed</div>}
-                             </div>
-                          </div>
-                          
-                          {u.personal_letter && (
-                            <div className="pt-4 border-t border-white/5">
-                              <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-3">Onboarding Letter Design Preview</div>
-                              <div className="bg-bg-secondary/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden max-w-sm">
-                                {/* Decorative tape/pin */}
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-4 bg-white/5 -translate-y-1/2 rotate-2 backdrop-blur-3xl shadow-sm z-20" />
-                                <h3 className="font-handwritten text-2xl text-accent-yellow mb-4">A letter for you...</h3>
-                                <div className="font-body text-sm text-text-primary/90 leading-relaxed whitespace-pre-wrap">
-                                   {u.personal_letter}
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {(u.signature_url || u.email || u.phone || u.instagram || u.snapchat || u.website || u.linkedin || u.youtube || u.github || u.x_twitter) && (
-                            <div className="pt-2 border-t border-white/5 grid grid-cols-2 gap-4">
-                              <div>
-                                <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Socials & Contact</div>
-                                <div className="space-y-1 font-mono text-[10px] [&>div]:flex [&>div]:gap-2">
-                                   {u.email && <div><span className="text-muted">EMAIL:</span>{u.email}</div>}
-                                   {u.phone && <div><span className="text-muted">PHONE:</span>{u.phone}</div>}
-                                   {u.instagram && <div><span className="text-muted">IG:</span>{u.instagram}</div>}
-                                   {u.snapchat && <div><span className="text-muted">SNAP:</span>{u.snapchat}</div>}
-                                   {u.linkedin && <div><span className="text-muted">IN:</span>{u.linkedin}</div>}
-                                   {u.youtube && <div><span className="text-muted">YT:</span>{u.youtube}</div>}
-                                   {u.github && <div><span className="text-muted">Git:</span>{u.github}</div>}
-                                   {u.x_twitter && <div><span className="text-muted">X:</span>{u.x_twitter}</div>}
-                                   {u.website && <div><span className="text-muted">Web:</span><span className="truncate max-w-[120px]">{u.website}</span></div>}
-                                </div>
-                              </div>
-                              <div>
-                                <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-2">Digital Signature</div>
-                                {u.signature_url ? (
-                                  <div className="bg-white/5 p-2 rounded w-fit">
-                                    <img src={u.signature_url} className="h-4 object-contain invert opacity-70" alt="signature" />
-                                  </div>
-                                ) : <div className="text-white/20">No signature recorded</div>}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div className="flex flex-col gap-2 border-l border-white/5 pl-6 pt-1">
-                           <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Public Profile</div>
-                           <div className="w-full max-w-[140px]">
-                              <YearbookCard student={{...u, accentColor: u.accent_color}} />
-                           </div>
-                           <div className="text-[9px] text-muted leading-tight max-w-[140px]">
-                              Click the card to open and preview the user's public modal.
-                           </div>
-
-                           <div className="w-full pt-4 mt-auto">
-                              <div className="text-[10px] text-red-400/60 uppercase tracking-widest mb-2 border-t border-red-500/20 pt-2">Danger Zone (Admin Actions)</div>
-                              <div className="flex flex-col gap-2 w-full max-w-[140px]">
-                                 <button onClick={() => handleResetPassword(u.id, u.username)} className="text-left w-full px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-mono bg-orange-500/10 text-orange-200 border border-orange-500/20 hover:bg-orange-500/20 transition-all text-center">Reset Pwd</button>
-                                 <button onClick={() => handleDeleteUser(u.id, u.username)} disabled={u.is_admin} className="text-left w-full px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-mono bg-red-500/10 text-red-200 border border-red-500/20 hover:bg-red-500/20 transition-all text-center disabled:opacity-30 disabled:cursor-not-allowed">Delete User</button>
-                              </div>
-                           </div>
-                        </div>
-                      </div>
-                    </div>
-                  </details>
+                  <UserRow 
+                    key={u.id} 
+                    idx={idx} 
+                    u={u} 
+                    showPasswords={showPasswords} 
+                    handleResetPassword={handleResetPassword} 
+                    handleDeleteUser={handleDeleteUser} 
+                  />
                 ))}
                 {users.length === 0 && <div className="p-6 text-sm text-muted">No users found.</div>}
               </div>
