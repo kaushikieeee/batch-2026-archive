@@ -16,6 +16,7 @@ create table if not exists public.users (
   is_admin boolean not null default false,
   must_change_password boolean not null default true,
   welcome_message text,
+  personal_letter text,
   welcome_image_url text,
   
   -- Profile Fields
@@ -122,6 +123,7 @@ alter table if exists public.users
   add column if not exists is_admin boolean not null default false,
   add column if not exists must_change_password boolean not null default true,
   add column if not exists welcome_message text,
+  add column if not exists personal_letter text,
   add column if not exists welcome_image_url text,
   add column if not exists name text,
   add column if not exists section text,
