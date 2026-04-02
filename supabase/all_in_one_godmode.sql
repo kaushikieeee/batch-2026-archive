@@ -370,6 +370,13 @@ ALTER TABLE public.student_messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.direct_messages ENABLE ROW LEVEL SECURITY;
 
 -- Create read policies so Anon users can load site data
+DROP POLICY IF EXISTS "public_read" ON public.users;
+DROP POLICY IF EXISTS "public_read" ON public.messages;
+DROP POLICY IF EXISTS "public_read" ON public.media;
+DROP POLICY IF EXISTS "public_read" ON public.students;
+DROP POLICY IF EXISTS "public_read" ON public.student_messages;
+DROP POLICY IF EXISTS "public_read" ON public.direct_messages;
+
 CREATE POLICY "public_read" ON public.users FOR SELECT USING (true);
 CREATE POLICY "public_read" ON public.messages FOR SELECT USING (true);
 CREATE POLICY "public_read" ON public.media FOR SELECT USING (true);
@@ -379,6 +386,13 @@ CREATE POLICY "public_read" ON public.direct_messages FOR SELECT USING (true);
 
 -- Create permissive write policies. 
 -- Note: In a pure anon custom table app, writes map to 'true' here unless explicitly constrained via custom RPCs.
+DROP POLICY IF EXISTS "public_all" ON public.users;
+DROP POLICY IF EXISTS "public_all" ON public.messages;
+DROP POLICY IF EXISTS "public_all" ON public.media;
+DROP POLICY IF EXISTS "public_all" ON public.students;
+DROP POLICY IF EXISTS "public_all" ON public.student_messages;
+DROP POLICY IF EXISTS "public_all" ON public.direct_messages;
+
 CREATE POLICY "public_all" ON public.users FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "public_all" ON public.messages FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "public_all" ON public.media FOR ALL USING (true) WITH CHECK (true);
