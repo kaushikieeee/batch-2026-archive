@@ -24,6 +24,11 @@ function StudentModal({ student, onClose }) {
   const accent = ACCENT_COLORS[student.accentColor] || ACCENT_COLORS.yellow
 
   useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
+
+  useEffect(() => {
     const load = async () => {
       setLoadingMsgs(true)
       const { data, error } = await getStudentMessages(student.id)

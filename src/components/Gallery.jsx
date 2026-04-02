@@ -71,13 +71,17 @@ function Lightbox({ items, index, onClose, onPrev, onNext }) {
   const item = items[index]
 
   useEffect(() => {
+    document.body.style.overflow = 'hidden'
     const fn = (e) => {
       if (e.key === 'Escape')     onClose()
       if (e.key === 'ArrowLeft')  onPrev()
       if (e.key === 'ArrowRight') onNext()
     }
     window.addEventListener('keydown', fn)
-    return () => window.removeEventListener('keydown', fn)
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', fn)
+    }
   }, [onClose, onPrev, onNext])
 
   return (

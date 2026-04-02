@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import SignaturePad from './SignaturePad'
 
@@ -28,6 +28,11 @@ const STEPS = ['Profile', 'Style', 'Socials', 'Signature']
 
 export default function ProfileUploadModal({ onClose, onSubmit, onDelete, initialData }) {
   const [step, setStep] = useState(0)
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
   const isEdit = !!initialData
   
   const [form, setForm] = useState({

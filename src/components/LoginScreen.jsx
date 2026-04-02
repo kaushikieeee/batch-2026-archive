@@ -6,6 +6,11 @@ import { GODMODE_USERNAME, loginUser, changePassword, updateUserProfile, uploadF
 import { YearbookSkeleton } from './Skeleton' // useful for 3d look
 
 export default function LoginScreen({ onLogin }) {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
