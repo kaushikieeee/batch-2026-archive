@@ -523,7 +523,7 @@ export default function Admin({ user }) {
 
                                 <h3 className="font-handwritten text-3xl text-[#3b2a1a] mb-5 mt-2 mix-blend-multiply relative z-10 drop-shadow-sm">A letter from the developer</h3>
                                 
-                                <div className="font-body text-sm text-[#2a221b] leading-[2.1] whitespace-pre-wrap max-h-[250px] overflow-y-auto pr-2 mix-blend-multiply relative z-10 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#5c4033]/20 [&::-webkit-scrollbar-thumb]:rounded-full">
+                                <div className="font-body text-sm text-[#2a221b] leading-[2.1] whitespace-pre-wrap break-words overflow-x-hidden max-h-[250px] overflow-y-auto pr-2 mix-blend-multiply relative z-10 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#5c4033]/20 [&::-webkit-scrollbar-thumb]:rounded-full">
                                   {newUser.personal_letter}
                                 </div>
 

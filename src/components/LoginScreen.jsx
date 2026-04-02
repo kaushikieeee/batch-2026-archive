@@ -216,7 +216,7 @@ export default function LoginScreen({ onLogin }) {
 
              <h3 className="font-handwritten text-4xl sm:text-5xl text-[#3b2a1a] mb-10 mt-6 mix-blend-multiply relative z-10 drop-shadow-sm">A letter from the developer</h3>
              
-             <div className="font-body text-base sm:text-lg text-[#2a221b] leading-[2.2] space-y-6 whitespace-pre-wrap mix-blend-multiply relative z-10 min-h-[150px]">
+             <div className="font-body text-base sm:text-lg text-[#2a221b] leading-[2.2] space-y-6 whitespace-pre-wrap break-words overflow-x-hidden mix-blend-multiply relative z-10 min-h-[150px]">
                 {authUser?.personal_letter}
              </div>
              
