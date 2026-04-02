@@ -182,7 +182,7 @@ export default function Yearbook({ user }) {
                   animate={{ opacity:1, scale:1, filter:'blur(0px)' }}
                   exit={{ opacity:0, scale:0.85 }}
                   transition={{ duration:0.38, delay: Math.min(i * 0.04, 0.4) }}>
-                  <YearbookCard student={student} />
+                  <YearbookCard student={student} user={user} />
                 </motion.div>
               )
             ))}

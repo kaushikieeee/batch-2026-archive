@@ -32,7 +32,7 @@ function StatusPill({ status }) {
   )
 }
 
-const UserRow = memo(function UserRow({ idx, u, showPasswords, handleResetPassword, handleDeleteUser }) {
+const UserRow = memo(function UserRow({ idx, u, showPasswords, handleResetPassword, handleDeleteUser, user }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -123,7 +123,7 @@ const UserRow = memo(function UserRow({ idx, u, showPasswords, handleResetPasswo
             <div className="flex flex-col gap-2 border-l border-white/5 pl-6 pt-1">
                <div className="text-[10px] text-muted/60 uppercase tracking-widest mb-1">Public Profile</div>
                <div className="w-full max-w-[140px]">
-                  {isOpen && <YearbookCard student={{...u, accentColor: u.accent_color}} disableInteractions={true} />}
+                  {isOpen && <YearbookCard student={{...u, accentColor: u.accent_color}} disableInteractions={true} user={user} />}
                </div>
                <div className="text-[9px] text-muted leading-tight max-w-[140px]">
                   Click the card to open and preview the user's public modal.
@@ -655,6 +655,7 @@ export default function Admin({ user }) {
                     showPasswords={showPasswords} 
                     handleResetPassword={handleResetPassword} 
                     handleDeleteUser={handleDeleteUser} 
+                    user={user}
                   />
                 ))}
                 {users.length === 0 && <div className="p-6 text-sm text-muted">No users found.</div>}

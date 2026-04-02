@@ -14,7 +14,7 @@ const ACCENT_COLORS = {
 }
 
 /* ── Profile modal ─────────────────────────────────────── */
-function StudentModal({ student, onClose }) {
+function StudentModal({ student, onClose, user }) {
   const [msgText, setMsgText]   = useState('')
   const [msgs, setMsgs]         = useState([])
   const [posting, setPosting]   = useState(false)
@@ -47,7 +47,7 @@ function StudentModal({ student, onClose }) {
     const { error } = await postStudentMessage({
       studentId: student.id,
       message: msgText.trim(),
-      author: 'Anonymous',
+      author: user?.name || user?.username || 'Anonymous',
     })
 
     if (error) {
@@ -283,7 +283,7 @@ function StudentModal({ student, onClose }) {
 }
 
 /* ── Card ──────────────────────────────────────────────── */
-export default function YearbookCard({ student, disableInteractions }) {
+export default function YearbookCard({ student, disableInteractions, user }) {
   const [open, setOpen] = useState(false)
   const accent = ACCENT_COLORS[student.accentColor] || ACCENT_COLORS.yellow
 
@@ -347,7 +347,7 @@ export default function YearbookCard({ student, disableInteractions }) {
       </motion.div>
 
       <AnimatePresence>
-        {open && <StudentModal student={student} onClose={() => setOpen(false)} />}
+        {open && <StudentModal student={student} onClose={() => setOpen(false)} user={user} />}
       </AnimatePresence>
     </>
   )
