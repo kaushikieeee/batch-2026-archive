@@ -45,7 +45,7 @@ export default function Admin({ user }) {
   const [photos, setPhotos] = useState([])
   const [memos, setMemos] = useState([])
 
-  const [newUser, setNewUser] = useState({ username: '', password: '', name: '', section: '', role: '', dob: '', welcome_message: '' })
+  const [newUser, setNewUser] = useState({ username: '', password: '', name: '', section: '', role: '', dob: '', welcome_message: '', personal_letter: '' })
 
   const [showPasswords, setShowPasswords] = useState(false)
 
@@ -122,9 +122,10 @@ export default function Admin({ user }) {
         role: newUser.role.trim() || null,
         dob: newUser.dob ? newUser.dob : null,
         welcome_message: newUser.welcome_message.trim() || null,
+        personal_letter: newUser.personal_letter?.trim() || null,
       })
       if (err) throw err
-      setNewUser({ username: '', password: '', name: '', section: '', role: '', dob: '', welcome_message: '' })
+      setNewUser({ username: '', password: '', name: '', section: '', role: '', dob: '', welcome_message: '', personal_letter: '' })
       await loadUsers()
     } catch (err) {
       setError(err.message || 'Could not create user.')
@@ -297,8 +298,19 @@ export default function Admin({ user }) {
                     <textarea
                       value={newUser.welcome_message}
                       onChange={e => setNewUser(p => ({ ...p, welcome_message: e.target.value }))}
-                      placeholder="e.g. Thanks for stopping by!"
-                      className="w-full bg-bg-primary border border-white/10 rounded-lg px-3 py-2 text-sm text-text-primary h-20 resize-y"
+                      placeholder="Short intro cinematic text"
+                      className="w-full bg-bg-primary border border-white/10 rounded-lg px-3 py-2 text-sm text-text-primary h-12 resize-y"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-muted/60 mb-1 ml-1 flex items-center justify-between">
+                       Personal Template Letter (Optional) <span className="text-accent-yellow/60">Reads fully customized</span>
+                    </label>
+                    <textarea
+                      value={newUser.personal_letter}
+                      onChange={e => setNewUser(p => ({ ...p, personal_letter: e.target.value }))}
+                      placeholder="A long-form letter only this user will see during onboarding... (e.g. My dear friend...)"
+                      className="w-full bg-bg-primary border border-white/10 focus:border-accent-yellow/40 rounded-lg px-3 py-2 text-sm text-text-primary h-24 resize-y font-body whitespace-pre-wrap"
                     />
                   </div>
                   <div>

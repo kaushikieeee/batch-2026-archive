@@ -42,11 +42,15 @@ export default function LoginScreen({ onLogin }) {
   useEffect(() => {
     if (step === 'INTRO_CINEMATIC') {
       let interval = setTimeout(() => {
-        setStep('PASSWORD')
+        if (authUser?.personal_letter) {
+          setStep('PERSONAL_LETTER')
+        } else {
+          setStep('PASSWORD')
+        }
       }, 4500)
       return () => clearTimeout(interval)
     }
-  }, [step])
+  }, [step, authUser])
 
 
   const handleChange = (e, obj, setter) => {
@@ -76,7 +80,8 @@ export default function LoginScreen({ onLogin }) {
       try {
         if (user.website) setCustomLinks(JSON.parse(user.website))
       } catch(e) {}
-      const vp = typeof user.visibility_preferences === 'string' ? JSON.parse(user.visibility_preferences) : (user.visibility_preferences || {});
+      let vp = user.visibility_preferences || {};
+      if (typeof vp === 'string') { try { vp = JSON.parse(vp); } catch(e) { vp = {}; } }
       setPrivacy({
         show_phone: vp.phone || false, 
         show_instagram: vp.instagram !== false, 
@@ -177,6 +182,36 @@ export default function LoginScreen({ onLogin }) {
            <h2 className="text-3xl md:text-5xl font-archive text-accent-yellow tracking-wide text-center drop-shadow-[0_0_15px_rgba(244,196,48,0.5)]">
              {introMessage}
            </h2>
+        </motion.div>
+      </div>
+    )
+  }
+
+  if (step === 'PERSONAL_LETTER') {
+    return (
+      <div className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#111111] p-4">
+        {/* Glow */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="w-[80vw] h-[80vw] max-w-[600px] max-h-[600px] rounded-full bg-accent-yellow/10 blur-[150px]" />
+        </div>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 w-full max-w-lg">
+           <div className="bg-bg-secondary/40 backdrop-blur-xl border border-white/10 rounded-2xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
+             
+             {/* Decorative tape/pin */}
+             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-white/5 -translate-y-3/4 rotate-2 backdrop-blur-3xl shadow-sm rotate-2 z-20" />
+
+             <h3 className="font-handwritten text-4xl text-accent-yellow mb-6">A letter for you...</h3>
+             
+             <div className="font-body text-base md:text-lg text-text-primary/90 leading-relaxed space-y-4 whitespace-pre-wrap">
+                {authUser?.personal_letter}
+             </div>
+             
+             <div className="mt-12 flex justify-end">
+               <button onClick={() => setStep('PASSWORD')} className="font-mono text-xs tracking-widest uppercase px-6 py-3 bg-accent-yellow text-bg-primary rounded-lg hover:bg-accent-yellow/90 transition-colors">
+                  Continue →
+               </button>
+             </div>
+           </div>
         </motion.div>
       </div>
     )
