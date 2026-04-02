@@ -1,5 +1,5 @@
 import YearbookCard from '../components/YearbookCard';
-import { useEffect, useMemo, useState, memo } from 'react'
+import { useEffect, useMemo, useState, memo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-hot-toast'
 import {
@@ -260,7 +260,7 @@ export default function Admin({ user }) {
     }
   }
 
-  const handleDeleteUser = async (id, username) => {
+  const handleDeleteUser = useCallback(async (id, username) => {
     if (!window.confirm(`Are you absolutely sure you want to delete the user "${username}"?\nThis deletes all their messages and uploads too!`)) return
     setLoading(true)
     setError('')
@@ -275,9 +275,9 @@ export default function Admin({ user }) {
     } finally {
       setLoading(false)
     }
-  }
+  }, []);
 
-  const handleResetPassword = async (id, username) => {
+  const handleResetPassword = useCallback(async (id, username) => {
     const newPwd = window.prompt(`Enter a new temporary password for "${username}":`)
     if (!newPwd || !newPwd.trim()) return
     setLoading(true)
@@ -293,7 +293,7 @@ export default function Admin({ user }) {
     } finally {
       setLoading(false)
     }
-  }
+  }, []);
 
   const moderate = async (type, id, status) => {
     setLoading(true)

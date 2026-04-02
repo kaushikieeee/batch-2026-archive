@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import YearbookCard from '../components/YearbookCard'
@@ -115,14 +115,16 @@ export default function Yearbook({ user }) {
     await loadStudents()
   }
 
-  const filtered = students.filter(s =>
-    (filter === 'All' || s.section === filter) &&
-    (
-      (s.name || '').toLowerCase().includes(search.toLowerCase()) ||
-      (s.section || '').toLowerCase().includes(search.toLowerCase()) ||
-      (s.role || '').toLowerCase().includes(search.toLowerCase())
+  const filtered = useMemo(() => {
+    return students.filter(s =>
+      (filter === 'All' || s.section === filter) &&
+      (
+        (s.name || '').toLowerCase().includes(search.toLowerCase()) ||
+        (s.section || '').toLowerCase().includes(search.toLowerCase()) ||
+        (s.role || '').toLowerCase().includes(search.toLowerCase())
+      )
     )
-  )
+  }, [students, filter, search])
 
   return (
     <main className="min-h-screen pt-20 md:pt-28 pb-28 md:pb-20">
