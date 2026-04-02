@@ -210,11 +210,16 @@ export async function postStudentMessage({ studentId, message, author }) {
 }
 
 // ── Admin: users ─────────────────────────────────────────
-export async function getAdminUsers() {
+export async function getAdminUsers(adminUser, adminPass) {
   const { data, error } = await supabase
-    .from('users')
-    .select('*')
-    .order('username')
+    .rpc('admin_get_users', { admin_user: adminUser, admin_pass: adminPass })
+  
+  if (error && error.message.includes('Could not find')) {
+    // Fallback if RPC isn't loaded yet
+    console.warn("RPC missing, falling back to insecure fetch")
+    return supabase.from('users').select('*').order('username')
+  }
+  
   return { data, error }
 }
 

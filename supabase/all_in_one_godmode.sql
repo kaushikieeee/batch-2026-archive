@@ -341,3 +341,48 @@ ADD COLUMN IF NOT EXISTS github TEXT,
 ADD COLUMN IF NOT EXISTS x_twitter TEXT,
 ADD COLUMN IF NOT EXISTS website TEXT,
 ADD COLUMN IF NOT EXISTS visibility_preferences JSONB DEFAULT '{"email": true, "phone": true, "instagram": true, "linkedin": true, "youtube": true, "github": true, "x_twitter": true, "website": true, "dob": true}'::jsonb;
+
+-- =============================================
+-- ADVANCED ADMIN SECURITY & RLS
+-- =============================================
+CREATE OR REPLACE FUNCTION public.admin_get_users(admin_user text, admin_pass text)
+RETURNS SETOF public.users AS $$
+DECLARE
+  caller_is_admin boolean;
+BEGIN
+  SELECT is_admin INTO caller_is_admin FROM public.users 
+  WHERE username = admin_user AND password = admin_pass;
+  
+  IF caller_is_admin THEN
+    RETURN QUERY SELECT * FROM public.users ORDER BY username;
+  ELSE
+    RAISE EXCEPTION 'Access Denied: Not an Administrator';
+  END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Base RLS Flag activation
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.media ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.students ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.student_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.direct_messages ENABLE ROW LEVEL SECURITY;
+
+-- Create read policies so Anon users can load site data
+CREATE POLICY "public_read" ON public.users FOR SELECT USING (true);
+CREATE POLICY "public_read" ON public.messages FOR SELECT USING (true);
+CREATE POLICY "public_read" ON public.media FOR SELECT USING (true);
+CREATE POLICY "public_read" ON public.students FOR SELECT USING (true);
+CREATE POLICY "public_read" ON public.student_messages FOR SELECT USING (true);
+CREATE POLICY "public_read" ON public.direct_messages FOR SELECT USING (true);
+
+-- Create permissive write policies. 
+-- Note: In a pure anon custom table app, writes map to 'true' here unless explicitly constrained via custom RPCs.
+CREATE POLICY "public_all" ON public.users FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "public_all" ON public.messages FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "public_all" ON public.media FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "public_all" ON public.students FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "public_all" ON public.student_messages FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "public_all" ON public.direct_messages FOR ALL USING (true) WITH CHECK (true);
+

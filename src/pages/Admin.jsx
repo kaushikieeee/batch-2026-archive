@@ -88,7 +88,7 @@ export default function Admin({ user }) {
   }), [messages, photos, memos, users])
 
   const loadUsers = async () => {
-    const { data, error: err } = await getAdminUsers()
+    const { data, error: err } = await getAdminUsers(user?.username, user?.password)
     if (err) throw err
     setUsers(data || [])
   }
