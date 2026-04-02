@@ -33,8 +33,12 @@ function StatusPill({ status }) {
   )
 }
 
-const UserRow = memo(function UserRow({ idx, u, showPasswords, handleResetPassword, handleDeleteUser, user, onPreviewOnboarding }) {
+const UserRow = memo(function UserRow({ idx, u, showPasswords, handleResetPassword, handleDeleteUser, handleToggleFirstLogin, user, onPreviewOnboarding }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  let vpLocal = u.visibility_preferences || {};
+  if (typeof vpLocal === 'string') { try { vpLocal = JSON.parse(vpLocal); } catch(e) { vpLocal = {}; } }
+  const isCurrentlyFirstTime = u.must_change_password || !vpLocal.has_completed_onboarding;
 
   return (
     <details 
@@ -156,6 +160,9 @@ const UserRow = memo(function UserRow({ idx, u, showPasswords, handleResetPasswo
                <div className="w-full pt-4 mt-auto">
                   <div className="text-[10px] text-red-400/60 uppercase tracking-widest mb-2 border-t border-red-500/20 pt-2">Danger Zone (Admin Actions)</div>
                   <div className="flex flex-col gap-2 w-full max-w-[140px]">
+                     <button onClick={() => handleToggleFirstLogin(u)} disabled={u.is_admin} className={`text-left w-full px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-mono border transition-all text-center disabled:opacity-30 disabled:cursor-not-allowed ${isCurrentlyFirstTime ? 'bg-green-500/10 text-green-200 border-green-500/20 hover:bg-green-500/20' : 'bg-yellow-500/10 text-yellow-200 border-yellow-500/20 hover:bg-yellow-500/20'}`}>
+                        {isCurrentlyFirstTime ? 'Set Onboarded' : 'Force 1st Login'}
+                     </button>
                      <button onClick={() => handleResetPassword(u.id, u.username)} className="text-left w-full px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-mono bg-orange-500/10 text-orange-200 border border-orange-500/20 hover:bg-orange-500/20 transition-all text-center">Reset Pwd</button>
                      <button onClick={() => handleDeleteUser(u.id, u.username)} disabled={u.is_admin} className="text-left w-full px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-mono bg-red-500/10 text-red-200 border border-red-500/20 hover:bg-red-500/20 transition-all text-center disabled:opacity-30 disabled:cursor-not-allowed">Delete User</button>
                   </div>
@@ -318,6 +325,44 @@ export default function Admin({ user }) {
       toast.error(err.message || 'Could not reset password.')
     } finally {
       setLoading(false)
+    }
+  }, []);
+
+  const handleToggleFirstLogin = useCallback(async (u) => {
+    let vpLocal = u.visibility_preferences || {};
+    if (typeof vpLocal === 'string') {
+      try { vpLocal = JSON.parse(vpLocal); } catch(e) { vpLocal = {}; }
+    }
+    
+    const isCurrentlyFirstTime = u.must_change_password || !vpLocal.has_completed_onboarding;
+    const warnMsg = isCurrentlyFirstTime 
+      ? `Are you sure you want to mark ${u.username} as having COMPLETED onboarding? They will skip the cinematic intro entirely and drop straight into the homepage on their next login.`
+      : `⚠️ WARNING: Are you sure you want to force ${u.username} into FIRST LOGIN mode? They will be shown the cinematic intro and their password format prompt again!`;
+
+    if (!window.confirm(warnMsg)) return;
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const payload = {
+        must_change_password: !isCurrentlyFirstTime,
+        visibility_preferences: {
+          ...vpLocal,
+          has_completed_onboarding: isCurrentlyFirstTime
+        }
+      };
+
+      const { error: err } = await updateUserProfile(u.id, payload);
+      if (err) throw err;
+      
+      await loadUsers();
+      toast.success(`Successfully updated ${u.username}'s onboarding status.`, { icon: '✅' });
+    } catch (err) {
+      setError(err.message || 'Could not update status.');
+      toast.error(err.message || 'Could not update status.');
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -681,7 +726,10 @@ export default function Admin({ user }) {
                     showPasswords={showPasswords} 
                     handleResetPassword={handleResetPassword} 
                     handleDeleteUser={handleDeleteUser} 
-                    user={user}                    onPreviewOnboarding={(u) => setPreviewAuthUser(u)}                  />
+                    handleToggleFirstLogin={handleToggleFirstLogin}
+                    user={user} 
+                    onPreviewOnboarding={(u) => setPreviewAuthUser(u)} 
+                  />
                 ))}
                 {users.length === 0 && <div className="p-6 text-sm text-muted">No users found.</div>}
               </div>
