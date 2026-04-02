@@ -1,6 +1,6 @@
 import YearbookCard from '../components/YearbookCard';
 import { useEffect, useMemo, useState, memo } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-hot-toast'
 import {
   MOD_STATUS,
@@ -159,6 +159,7 @@ export default function Admin({ user }) {
   const [memos, setMemos] = useState([])
 
   const [newUser, setNewUser] = useState({ username: '', password: '', name: '', section: '', role: '', dob: '', welcome_message: '', personal_letter: '' })
+  const [previewStep, setPreviewStep] = useState('welcome')
 
   const [showPasswords, setShowPasswords] = useState(false)
   const [userSearch, setUserSearch] = useState('')
@@ -486,39 +487,116 @@ export default function Admin({ user }) {
                 <h2 className="font-archive text-xl text-text-primary/70 mb-6 relative z-10 shrink-0">First-time Login Preview</h2>
                 
                 <div className="flex-1 flex flex-col justify-center gap-6 relative z-10 overflow-y-auto pr-2 custom-scrollbar">
-                  {newUser.welcome_message ? (
-                    <motion.div initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} className="w-full flex flex-col items-center">
-                       <h2 className="text-xl md:text-3xl font-archive text-accent-yellow tracking-wide text-center drop-shadow-[0_0_15px_rgba(244,196,48,0.5)]">
-                         {newUser.welcome_message}
-                       </h2>
-                       <div className="text-[10px] uppercase font-mono text-muted/50 tracking-widest mt-4 text-center">
-                         Cinematic Welcome Message (Fades in over 3s)
-                       </div>
-                    </motion.div>
-                  ) : !newUser.personal_letter && (
-                    <div className="text-center font-mono text-xs text-muted/50 border border-white/5 bg-white/5 p-4 rounded-xl border-dashed">
-                      Enter a "Welcome Message" or "Personal Letter" to see the onboarding preview here.
-                    </div>
-                  )}
+                  <AnimatePresence mode="wait">
+                    {previewStep === 'welcome' && (
+                      <motion.div key="welcome" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="w-full flex flex-col items-center gap-6">
+                        {newUser.welcome_message ? (
+                          <>
+                            <h2 className="text-xl md:text-3xl font-archive text-accent-yellow tracking-wide text-center drop-shadow-[0_0_15px_rgba(244,196,48,0.5)]">
+                              {newUser.welcome_message}
+                            </h2>
+                            <button onClick={() => setPreviewStep('letter')} className="mt-6 font-mono text-[10px] uppercase tracking-widest px-4 py-2 border border-white/20 rounded-full hover:bg-white/10 transition-colors">
+                              Next Step: Personal Letter →
+                            </button>
+                          </>
+                        ) : (
+                          <div className="text-center font-mono text-xs text-muted/50 border border-white/5 bg-white/5 p-4 rounded-xl border-dashed">
+                            Enter a "Welcome Message" to preview this step.
+                            <div className="mt-4">
+                              <button onClick={() => setPreviewStep('letter')} className="font-mono text-[10px] uppercase tracking-widest px-3 py-1.5 border border-white/20 rounded-full hover:bg-white/10 transition-colors">Skip to Letter →</button>
+                            </div>
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
 
-                  {newUser.personal_letter && (
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full">
-                       <div className="bg-[#f9f7f1] rounded-sm p-6 relative shadow-[0_10px_40px_rgba(0,0,0,0.5),inset_0_0_40px_rgba(139,69,19,0.05)] overflow-visible">
-                         {/* Decorative tape/pin */}
-                         <div className="absolute top-[-6px] left-1/2 -translate-x-1/2 w-20 h-6 bg-[#e8e4d9] opacity-90 rotate-[-2deg] shadow-sm z-20" style={{ clipPath: 'polygon(2% 0, 100% 4%, 98% 100%, 0 96%)' }} />
-                         
-                         <h3 className="font-handwritten text-2xl text-[#5c4033] mb-5 mt-2 mix-blend-multiply">A letter for you...</h3>
-                         <div className="font-body text-sm text-[#2c2825] leading-relaxed whitespace-pre-wrap max-h-[300px] overflow-y-auto pr-2 mix-blend-multiply [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#5c4033]/20 [&::-webkit-scrollbar-thumb]:rounded-full">
-                           {newUser.personal_letter}
-                         </div>
-                       </div>
-                       <div className="mt-4 flex justify-end">
-                         <div className="font-mono text-[9px] tracking-widest uppercase px-3 py-1.5 bg-[#2c2825] text-[#f9f7f1] rounded-lg opacity-70">
-                            Continue →
-                         </div>
-                       </div>
-                    </motion.div>
-                  )}
+                    {previewStep === 'letter' && (
+                      <motion.div key="letter" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="w-full">
+                        {newUser.personal_letter ? (
+                          <>
+                            <div className="bg-[#f9f7f1] rounded-sm p-6 relative shadow-[0_10px_40px_rgba(0,0,0,0.5),inset_0_0_40px_rgba(139,69,19,0.05)] overflow-visible">
+                              <div className="absolute top-[-6px] left-1/2 -translate-x-1/2 w-20 h-6 bg-[#e8e4d9] opacity-90 rotate-[-2deg] shadow-sm z-20" style={{ clipPath: 'polygon(2% 0, 100% 4%, 98% 100%, 0 96%)' }} />
+                              <h3 className="font-handwritten text-2xl text-[#5c4033] mb-5 mt-2 mix-blend-multiply">A letter for you...</h3>
+                              <div className="font-body text-sm text-[#2c2825] leading-relaxed whitespace-pre-wrap max-h-[300px] overflow-y-auto pr-2 mix-blend-multiply [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#5c4033]/20 [&::-webkit-scrollbar-thumb]:rounded-full">
+                                {newUser.personal_letter}
+                              </div>
+                            </div>
+                            <div className="mt-6 flex justify-between items-center">
+                              <button onClick={() => setPreviewStep('welcome')} className="font-mono text-[10px] uppercase tracking-widest text-[#f9f7f1]/50 hover:text-white transition-colors">
+                                ← Back
+                              </button>
+                              <button onClick={() => setPreviewStep('password')} className="font-mono text-[9px] tracking-widest uppercase px-4 py-2 bg-[#2c2825] text-[#f9f7f1] rounded-lg transition-transform hover:scale-105 shadow-xl">
+                                Continue →
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="text-center font-mono text-xs text-muted/50 border border-white/5 bg-white/5 p-4 rounded-xl border-dashed">
+                            Enter a "Personal Letter" to preview this step.
+                            <div className="mt-4 flex gap-4 justify-center">
+                              <button onClick={() => setPreviewStep('welcome')} className="font-mono text-[10px] uppercase tracking-widest border border-white/20 px-3 py-1.5 rounded-full hover:bg-white/10">← Back</button>
+                              <button onClick={() => setPreviewStep('password')} className="font-mono text-[10px] uppercase tracking-widest px-3 py-1.5 border border-white/20 rounded-full hover:bg-white/10 transition-colors">Skip to Password →</button>
+                            </div>
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+
+                    {previewStep === 'password' && (
+                      <motion.div key="password" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="w-full flex flex-col items-center text-center max-w-sm mx-auto">
+                        <h2 className="font-archive text-2xl text-accent-yellow mb-2">Change Password</h2>
+                        <p className="font-body text-sm text-text-primary/70 mb-6">Let's secure your account before moving forward.</p>
+                        
+                        <div className="w-full space-y-4 mb-6">
+                            <input type="password" placeholder="New Password" disabled className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 font-mono text-sm text-white/50 cursor-not-allowed" />
+                            <input type="password" placeholder="Confirm Password" disabled className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 font-mono text-sm text-white/50 cursor-not-allowed" />
+                        </div>
+                        
+                        <div className="w-full flex justify-between items-center mt-4">
+                          <button onClick={() => setPreviewStep('letter')} className="font-mono text-[10px] uppercase tracking-widest text-[#f9f7f1]/50 hover:text-white transition-colors">
+                            ← Back
+                          </button>
+                          <button onClick={() => setPreviewStep('profile')} className="font-mono text-[10px] uppercase tracking-widest px-4 py-2 bg-accent-yellow text-bg-primary rounded-full font-bold">
+                            Update & Continue →
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {previewStep === 'profile' && (
+                      <motion.div key="profile" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="w-full flex flex-col items-center">
+                        <div className="w-24 h-24 rounded-full bg-white/10 border-2 border-dashed border-white/20 flex flex-col items-center justify-center mb-6 text-white/50">
+                          <span className="text-2xl mt-1">+</span>
+                          <span className="font-mono text-[8px] uppercase tracking-widest">photo</span>
+                        </div>
+                        <h2 className="font-archive text-2xl text-accent-yellow mb-2 text-center">Set Your Photo</h2>
+                        <p className="font-body text-sm text-text-primary/70 text-center mb-8">This is how everyone will see you.</p>
+                        
+                        <div className="w-full flex justify-between items-center mt-2">
+                          <button onClick={() => setPreviewStep('password')} className="font-mono text-[10px] uppercase tracking-widest text-[#f9f7f1]/50 hover:text-white transition-colors">
+                            ← Back
+                          </button>
+                          <button onClick={() => setPreviewStep('done')} className="font-mono text-[10px] uppercase tracking-widest px-4 py-2 border border-accent-yellow text-accent-yellow rounded-full font-bold hover:bg-accent-yellow hover:text-bg-primary transition-colors">
+                            Next: Socials... →
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {previewStep === 'done' && (
+                      <motion.div key="done" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="w-full flex flex-col items-center text-center">
+                        <div className="w-16 h-16 rounded-full bg-accent-yellow/20 flex items-center justify-center mb-6">
+                           <svg className="w-8 h-8 text-accent-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        </div>
+                        <h2 className="font-archive text-2xl text-accent-yellow mb-2">You're All Set!</h2>
+                        <p className="font-body text-sm text-text-primary/70 mb-8">Welcome aboard.</p>
+                        
+                        <button onClick={() => setPreviewStep('welcome')} className="font-mono text-[10px] uppercase tracking-widest px-4 py-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors">
+                          Restart Preview
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             </div>
