@@ -54,7 +54,7 @@ export default function Vault() {
     } else {
       toast.success('Submitted for admin review!', { id: tid })
       confetti({ particleCount: 150, zIndex: 9999, colors: ['#F4C430', '#FFFFFF', '#111111'] })
-      setUploadFileState(null)
+      setUploadFileState(null); setUploadTitle("");
       setShowUpload(false)
     }
   }

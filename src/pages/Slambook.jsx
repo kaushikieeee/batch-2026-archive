@@ -117,7 +117,7 @@ export default function Slambook({ user }) {
 
   const handleSelectUser = (peer) => {
     setSelectedUser(peer)
-    loadMessages(peer.id)
+    
   }
 
   const handleSend = async (e) => {

@@ -351,7 +351,6 @@ export default function LoginScreen({ onLogin }) {
         setPrivacy({ show_phone: true, show_email: true, show_instagram: true, show_snapchat: true, show_linkedin: true })
       } else if (mode === 'vip') {
         setPrivacy({ show_phone: false, show_email: true, show_instagram: true, show_snapchat: false, show_linkedin: true })
-        setPrivacy({ show_phone: false, show_email: true, show_instagram: false, show_snapchat: false, show_linkedin: true })
       }
     }
     
