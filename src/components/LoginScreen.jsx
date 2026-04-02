@@ -218,7 +218,7 @@ export default function LoginScreen({ onLogin, adminPreviewUser, onExitPreview }
 
   if (step === 'PERSONAL_LETTER') {
     return (
-      <div className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#0d0d0d] p-4 sm:p-8 overflow-y-auto overflow-x-hidden">
+      <div className="fixed inset-0 z-[99999] flex flex-col items-center bg-[#0d0d0d] px-4 py-16 sm:px-8 sm:py-24 overflow-y-auto overflow-x-hidden md:justify-start">
         {/* Aesthetic Background Effect */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="w-[120vw] h-[120vw] max-w-[1000px] max-h-[1000px] rounded-full bg-accent-yellow/5 blur-[150px] opacity-70" />

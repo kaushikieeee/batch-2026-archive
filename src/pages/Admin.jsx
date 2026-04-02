@@ -552,11 +552,11 @@ export default function Admin({ user }) {
                 </div>
               </div>
 
-              <div className="glass border border-white/10 rounded-2xl p-5 flex flex-col relative overflow-hidden min-h-[400px]">
+              <div className="glass border border-white/10 rounded-2xl p-5 flex flex-col relative min-h-[400px] overflow-hidden">
                 <div className="w-full h-full absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-accent-yellow/10 via-bg-primary/50 to-bg-primary -z-10"></div>
                 <h2 className="font-archive text-xl text-text-primary/70 mb-6 relative z-10 shrink-0">First-time Login Preview</h2>
                 
-                <div className="flex-1 flex flex-col justify-center gap-6 relative z-10 overflow-y-auto pr-2 custom-scrollbar">
+                <div className="flex-1 flex flex-col justify-start py-4 gap-6 relative z-10 overflow-y-auto pr-2 custom-scrollbar">
                   <AnimatePresence mode="wait">
                     {previewStep === 'welcome' && (
                       <motion.div key="welcome" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="w-full flex flex-col items-center gap-6">
