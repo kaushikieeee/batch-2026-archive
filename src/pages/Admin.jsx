@@ -524,8 +524,8 @@ export default function Admin({ user }) {
                   <StatusPill status={item.status} />
                 </div>
                 <div className="flex gap-2 mt-3">
-                  <button onClick={() => moderate('messages', item.id, MOD_STATUS.APPROVED)} className="px-3 py-1.5 rounded-lg text-xs font-mono bg-green-500/20 text-green-200 border border-green-400/30">Approve</button>
-                  <button onClick={() => moderate('messages', item.id, MOD_STATUS.REJECTED)} className="px-3 py-1.5 rounded-lg text-xs font-mono bg-red-500/20 text-red-200 border border-red-400/30">Reject</button>
+                  <button disabled={loading} onClick={() => moderate('messages', item.id, MOD_STATUS.APPROVED)} className="px-3 py-1.5 rounded-lg text-xs font-mono bg-green-500/20 text-green-200 border border-green-400/30 disabled:opacity-50">Approve</button>
+                  <button disabled={loading} onClick={() => moderate('messages', item.id, MOD_STATUS.REJECTED)} className="px-3 py-1.5 rounded-lg text-xs font-mono bg-red-500/20 text-red-200 border border-red-400/30 disabled:opacity-50">Reject</button>
                 </div>
               </div>
             ))}
@@ -546,8 +546,8 @@ export default function Admin({ user }) {
                   <StatusPill status={item.status} />
                 </div>
                 <div className="flex gap-2 mt-3">
-                  <button onClick={() => moderate('photos', item.id, MOD_STATUS.APPROVED)} className="px-3 py-1.5 rounded-lg text-xs font-mono bg-green-500/20 text-green-200 border border-green-400/30">Approve</button>
-                  <button onClick={() => moderate('photos', item.id, MOD_STATUS.REJECTED)} className="px-3 py-1.5 rounded-lg text-xs font-mono bg-red-500/20 text-red-200 border border-red-400/30">Reject</button>
+                  <button disabled={loading} onClick={() => moderate('photos', item.id, MOD_STATUS.APPROVED)} className="px-3 py-1.5 rounded-lg text-xs font-mono bg-green-500/20 text-green-200 border border-green-400/30 disabled:opacity-50">Approve</button>
+                  <button disabled={loading} onClick={() => moderate('photos', item.id, MOD_STATUS.REJECTED)} className="px-3 py-1.5 rounded-lg text-xs font-mono bg-red-500/20 text-red-200 border border-red-400/30 disabled:opacity-50">Reject</button>
                 </div>
               </div>
             ))}
@@ -567,8 +567,8 @@ export default function Admin({ user }) {
                   <StatusPill status={item.status} />
                 </div>
                 <div className="flex gap-2 mt-3">
-                  <button onClick={() => moderate('memos', item.id, MOD_STATUS.APPROVED)} className="px-3 py-1.5 rounded-lg text-xs font-mono bg-green-500/20 text-green-200 border border-green-400/30">Approve</button>
-                  <button onClick={() => moderate('memos', item.id, MOD_STATUS.REJECTED)} className="px-3 py-1.5 rounded-lg text-xs font-mono bg-red-500/20 text-red-200 border border-red-400/30">Reject</button>
+                  <button disabled={loading} onClick={() => moderate('memos', item.id, MOD_STATUS.APPROVED)} className="px-3 py-1.5 rounded-lg text-xs font-mono bg-green-500/20 text-green-200 border border-green-400/30 disabled:opacity-50">Approve</button>
+                  <button disabled={loading} onClick={() => moderate('memos', item.id, MOD_STATUS.REJECTED)} className="px-3 py-1.5 rounded-lg text-xs font-mono bg-red-500/20 text-red-200 border border-red-400/30 disabled:opacity-50">Reject</button>
                 </div>
               </div>
             ))}
