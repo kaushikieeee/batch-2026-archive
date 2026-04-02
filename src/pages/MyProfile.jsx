@@ -353,7 +353,10 @@ export default function MyProfile({ user }) {
           <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
             <button
               type="button"
-              onClick={() => window.location.href = '/'}
+              onClick={() => {
+                localStorage.removeItem('archive_user');
+                window.location.href = '/';
+              }}
               className="w-full md:w-auto border border-red-500/30 text-red-500/80 bg-red-500/10 font-bold px-8 py-3 rounded-xl hover:bg-red-500/20 transition-colors uppercase tracking-widest font-mono text-sm"
             >
               Logout

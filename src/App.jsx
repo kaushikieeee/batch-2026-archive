@@ -60,10 +60,29 @@ function Footer() {
 }
 
 function MainApp() {
-  const [phase, setPhase] = useState('splash')
-  const [user,  setUser]  = useState(null)
+  const [phase, setPhase] = useState(() => {
+    try {
+      if (localStorage.getItem('archive_user')) return 'app'
+    } catch(e) {}
+    return 'splash'
+  })
+  const [user, setUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('archive_user')
+      if (saved) return JSON.parse(saved)
+    } catch(e) {}
+    return null
+  })
   const [refreshKey, setRefreshKey] = useState(0)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('archive_user', JSON.stringify(user))
+    } else {
+      localStorage.removeItem('archive_user')
+    }
+  }, [user])
 
   /* Lenis smooth scroll */
   useEffect(() => {
