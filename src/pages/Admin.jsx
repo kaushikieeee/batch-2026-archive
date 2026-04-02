@@ -33,7 +33,7 @@ function StatusPill({ status }) {
   )
 }
 
-const UserRow = memo(function UserRow({ idx, u, showPasswords, handleResetPassword, handleDeleteUser, handleToggleFirstLogin, user, onPreviewOnboarding }) {
+const UserRow = memo(function UserRow({ idx, u, showPasswords, handleResetPassword, handleDeleteUser, handleSetOnboardingStatus, user, onPreviewOnboarding }) {
   const [isOpen, setIsOpen] = useState(false);
 
   let vpLocal = u.visibility_preferences || {};
@@ -160,9 +160,10 @@ const UserRow = memo(function UserRow({ idx, u, showPasswords, handleResetPasswo
                <div className="w-full pt-4 mt-auto">
                   <div className="text-[10px] text-red-400/60 uppercase tracking-widest mb-2 border-t border-red-500/20 pt-2">Danger Zone (Admin Actions)</div>
                   <div className="flex flex-col gap-2 w-full max-w-[140px]">
-                     <button onClick={() => handleToggleFirstLogin(u)} disabled={u.is_admin} className={`text-left w-full px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-mono border transition-all text-center disabled:opacity-30 disabled:cursor-not-allowed ${isCurrentlyFirstTime ? 'bg-green-500/10 text-green-200 border-green-500/20 hover:bg-green-500/20' : 'bg-yellow-500/10 text-yellow-200 border-yellow-500/20 hover:bg-yellow-500/20'}`}>
-                        {isCurrentlyFirstTime ? 'Set Onboarded' : 'Force 1st Login'}
-                     </button>
+                     <div className="grid grid-cols-2 gap-1 mb-1">
+                       <button onClick={() => handleSetOnboardingStatus(u, 'fresh')} disabled={u.is_admin || isCurrentlyFirstTime} className="text-left w-full px-1.5 py-1.5 rounded text-[9px] uppercase tracking-wider font-mono bg-yellow-500/10 text-yellow-200 border border-yellow-500/20 hover:bg-yellow-500/20 transition-all text-center disabled:opacity-20 disabled:cursor-not-allowed" title="Restart Onboarding">Make Fresh</button>
+                       <button onClick={() => handleSetOnboardingStatus(u, 'onboarded')} disabled={u.is_admin || !isCurrentlyFirstTime} className="text-left w-full px-1.5 py-1.5 rounded text-[9px] uppercase tracking-wider font-mono bg-green-500/10 text-green-200 border border-green-500/20 hover:bg-green-500/20 transition-all text-center disabled:opacity-20 disabled:cursor-not-allowed" title="Skip Onboarding">Set Onboarded</button>
+                     </div>
                      <button onClick={() => handleResetPassword(u.id, u.username)} className="text-left w-full px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-mono bg-orange-500/10 text-orange-200 border border-orange-500/20 hover:bg-orange-500/20 transition-all text-center">Reset Pwd</button>
                      <button onClick={() => handleDeleteUser(u.id, u.username)} disabled={u.is_admin} className="text-left w-full px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-mono bg-red-500/10 text-red-200 border border-red-500/20 hover:bg-red-500/20 transition-all text-center disabled:opacity-30 disabled:cursor-not-allowed">Delete User</button>
                   </div>
@@ -328,16 +329,15 @@ export default function Admin({ user }) {
     }
   }, []);
 
-  const handleToggleFirstLogin = useCallback(async (u) => {
+  const handleSetOnboardingStatus = useCallback(async (u, explicitStatus) => {
     let vpLocal = u.visibility_preferences || {};
     if (typeof vpLocal === 'string') {
       try { vpLocal = JSON.parse(vpLocal); } catch(e) { vpLocal = {}; }
     }
     
-    const isCurrentlyFirstTime = u.must_change_password || !vpLocal.has_completed_onboarding;
-    const warnMsg = isCurrentlyFirstTime 
+    const warnMsg = explicitStatus === 'onboarded'
       ? `Are you sure you want to mark ${u.username} as having COMPLETED onboarding? They will skip the cinematic intro entirely and drop straight into the homepage on their next login.`
-      : `⚠️ WARNING: Are you sure you want to force ${u.username} into FIRST LOGIN mode? They will be shown the cinematic intro and their password format prompt again!`;
+      : `⚠️ WARNING: Are you sure you want to completely RESET ${u.username} into FIRST LOGIN (Fresh) mode? They will be put through the onboarding cinematic sequence and required to update their password again!`;
 
     if (!window.confirm(warnMsg)) return;
 
@@ -346,10 +346,10 @@ export default function Admin({ user }) {
 
     try {
       const payload = {
-        must_change_password: !isCurrentlyFirstTime,
+        must_change_password: explicitStatus === 'fresh',
         visibility_preferences: {
           ...vpLocal,
-          has_completed_onboarding: isCurrentlyFirstTime
+          has_completed_onboarding: explicitStatus === 'onboarded'
         }
       };
 
@@ -357,7 +357,7 @@ export default function Admin({ user }) {
       if (err) throw err;
       
       await loadUsers();
-      toast.success(`Successfully updated ${u.username}'s onboarding status.`, { icon: '✅' });
+      toast.success(`Successfully set ${u.username}'s onboarding state to ${explicitStatus.toUpperCase()}.`, { icon: '✅' });
     } catch (err) {
       setError(err.message || 'Could not update status.');
       toast.error(err.message || 'Could not update status.');
@@ -726,7 +726,7 @@ export default function Admin({ user }) {
                     showPasswords={showPasswords} 
                     handleResetPassword={handleResetPassword} 
                     handleDeleteUser={handleDeleteUser} 
-                    handleToggleFirstLogin={handleToggleFirstLogin}
+                    handleSetOnboardingStatus={handleSetOnboardingStatus}
                     user={user} 
                     onPreviewOnboarding={(u) => setPreviewAuthUser(u)} 
                   />
