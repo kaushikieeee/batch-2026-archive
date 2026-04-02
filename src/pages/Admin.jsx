@@ -54,15 +54,21 @@ export default function Admin({ user }) {
     if (!userSearch.trim()) return users;
     const lower = userSearch.toLowerCase();
     return users.filter(u => 
-      u.username?.toLowerCase().includes(lower) ||
-      u.name?.toLowerCase().includes(lower) ||
-      u.section?.toLowerCase().includes(lower)
+      (u.username?.toLowerCase() || '').includes(lower) ||
+      (u.name?.toLowerCase() || '').includes(lower) ||
+      (u.section?.toLowerCase() || '').includes(lower)
     );
   }, [users, userSearch]);
 
   const downloadUsersCSV = () => {
     const headers = ['Username', 'Name', 'Section', 'Role', 'Password']
-    const rows = filteredUsers.map(u => [u.username, u.name || '', u.section || '', u.role || '', showPasswords ? u.password : '***'])
+    const rows = filteredUsers.map(u => [
+      `"${(u.username || '').replace(/"/g, '""')}"`,
+      `"${(u.name || '').replace(/"/g, '""')}"`,
+      `"${(u.section || '').replace(/"/g, '""')}"`,
+      `"${(u.role || '').replace(/"/g, '""')}"`,
+      `"${(showPasswords ? u.password : '***').replace(/"/g, '""')}"`
+    ])
     const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n')
     const blob = new Blob([csvContent], { type: 'text/csv' })
     const url = URL.createObjectURL(blob)
@@ -70,6 +76,7 @@ export default function Admin({ user }) {
     a.href = url
     a.download = 'users_backup.csv'
     a.click()
+    URL.revokeObjectURL(url)
   }
 
   const counts = useMemo(() => ({
