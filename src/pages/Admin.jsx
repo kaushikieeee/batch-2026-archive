@@ -45,7 +45,7 @@ export default function Admin({ user }) {
   const [photos, setPhotos] = useState([])
   const [memos, setMemos] = useState([])
 
-  const [newUser, setNewUser] = useState({ username: '', password: '', name: '', section: '', role: '', dob: '' })
+  const [newUser, setNewUser] = useState({ username: '', password: '', name: '', section: '', role: '', dob: '', welcome_message: '' })
 
   const [showPasswords, setShowPasswords] = useState(false)
 
@@ -121,9 +121,10 @@ export default function Admin({ user }) {
         section: newUser.section.trim() || null,
         role: newUser.role.trim() || null,
         dob: newUser.dob ? newUser.dob : null,
+        welcome_message: newUser.welcome_message.trim() || null,
       })
       if (err) throw err
-      setNewUser({ username: '', password: '', name: '', section: '', role: '', dob: '' })
+      setNewUser({ username: '', password: '', name: '', section: '', role: '', dob: '', welcome_message: '' })
       await loadUsers()
     } catch (err) {
       setError(err.message || 'Could not create user.')
@@ -289,6 +290,15 @@ export default function Admin({ user }) {
                       onChange={e => setNewUser(p => ({ ...p, role: e.target.value }))}
                       placeholder="Role"
                       className="w-full bg-bg-primary border border-white/10 rounded-lg px-3 py-2 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-muted/60 mb-1 ml-1">Custom Welcome Message (Optional)</label>
+                    <textarea
+                      value={newUser.welcome_message}
+                      onChange={e => setNewUser(p => ({ ...p, welcome_message: e.target.value }))}
+                      placeholder="e.g. Thanks for stopping by!"
+                      className="w-full bg-bg-primary border border-white/10 rounded-lg px-3 py-2 text-sm text-text-primary h-20 resize-y"
                     />
                   </div>
                   <div>
