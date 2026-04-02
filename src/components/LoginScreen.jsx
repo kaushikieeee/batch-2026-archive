@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import SignaturePad from './SignaturePad'
-import { GODMODE_USERNAME, loginUser, changePassword, updateUserProfile, uploadFile } from '../lib/supabase'
+import { loginUser, changePassword, updateUserProfile, uploadFile } from '../lib/supabase'
 import { YearbookSkeleton } from './Skeleton' // useful for 3d look
 
 export default function LoginScreen({ onLogin }) {
@@ -465,7 +465,7 @@ export default function LoginScreen({ onLogin }) {
         </motion.div>
 
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }} className="text-center font-mono text-[8px] text-muted/25 tracking-widest mt-6 uppercase">
-          Supabase connected · godmode user: {GODMODE_USERNAME}
+          System operational · authorized personnel only
         </motion.p>
       </div>
     </motion.div>

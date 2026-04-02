@@ -3,11 +3,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { toast } from 'react-hot-toast'
 import {
-  GODMODE_PASSWORD,
-  GODMODE_USERNAME,
   MOD_STATUS,
   createSingleUser,
-  ensureGodmodeUser,
   getAdminUsers,
   getAllMediaForAdmin,
   getAllMessagesForAdmin,
@@ -203,22 +200,6 @@ export default function Admin({ user }) {
     } finally {
       setLoading(false)
       e.target.value = '' // Reset input
-    }
-  }
-
-  const createOrResetGodmode = async () => {
-    setLoading(true)
-    setError('')
-    try {
-      const { error: err } = await ensureGodmodeUser()
-      if (err) throw err
-      await loadUsers()
-      toast.success('Godmode user created/reset successfully!', { icon: '👑' })
-    } catch (err) {
-      setError(err.message || 'Could not create/reset godmode user.')
-      toast.error('Failed to initialize godmode user.')
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -444,23 +425,6 @@ export default function Admin({ user }) {
               </div>
 
               <div className="glass border border-white/10 rounded-2xl p-5">
-                <h2 className="font-archive text-2xl text-text-primary mb-4">Godmode account</h2>
-                <p className="font-body text-xs text-muted/70 mb-3">
-                  Use this one-click action to create or reset your owner login directly in Supabase.
-                </p>
-                <div className="rounded-xl border border-accent-yellow/30 bg-accent-yellow/10 p-3 space-y-1">
-                  <p className="font-mono text-[10px] text-accent-yellow/90 uppercase tracking-wider">Username: {GODMODE_USERNAME}</p>
-                  <p className="font-mono text-[10px] text-accent-yellow/90 uppercase tracking-wider">Password: {GODMODE_PASSWORD}</p>
-                </div>
-                <button
-                  onClick={createOrResetGodmode}
-                  disabled={loading}
-                  className="mt-4 w-full py-2.5 rounded-lg bg-accent-yellow text-bg-primary font-mono text-xs tracking-widest uppercase disabled:opacity-50"
-                >
-                  Create / reset godmode user
-                </button>
-
-                <div className="mt-8 pt-8 border-t border-white/10">
                    <h2 className="font-archive text-xl text-text-primary mb-4">Bulk Import (CSV)</h2>
                    <p className="font-body text-xs text-muted/70 mb-3">
                      Need to onboard a whole class? Upload a CSV header with <code className="bg-bg-primary px-1 border border-white/10 rounded">username,password,name,section,role</code>
@@ -476,7 +440,6 @@ export default function Admin({ user }) {
                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                      />
                    </div>
-                </div>
               </div>
             </div>
 

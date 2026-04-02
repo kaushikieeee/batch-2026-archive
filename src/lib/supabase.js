@@ -11,10 +11,7 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-export const GODMODE_USERNAME = 'Kaushik S'
-export const GODMODE_PASSWORD = 'rashmika_av@124'
-
-const MOD_STATUS = {
+export const MOD_STATUS = {
   PENDING: 'pending',
   APPROVED: 'approved',
   REJECTED: 'rejected',
@@ -28,58 +25,13 @@ export async function loginUser(username, password) {
     .eq('username', username)
     .eq('password', password)
     .single()
-  if (error && /public\.users|schema cache|does not exist/i.test(error.message || '')) {
-    if (username === GODMODE_USERNAME && password === GODMODE_PASSWORD) {
-      return {
-        user: {
-          id: 'local-godmode',
-          username: GODMODE_USERNAME,
-          password: GODMODE_PASSWORD,
-          is_admin: true,
-        },
-        error: null,
-      }
-    }
-  }
+
   if (error) return { user: null, error }
   return { user: data, error: null }
 }
 
 export function isGodmodeUser(user) {
-  return Boolean(
-    user &&
-    user.username === GODMODE_USERNAME &&
-    user.password === GODMODE_PASSWORD
-  )
-}
-
-export async function ensureGodmodeUser() {
-  const basePayload = {
-    username: GODMODE_USERNAME,
-    password: GODMODE_PASSWORD,
-  }
-
-  let result = await supabase
-    .from('users')
-    .upsert({ ...basePayload, is_admin: true, must_change_password: false }, { onConflict: 'username' })
-    .select()
-
-  // Support older schemas that do not yet have the is_admin column.
-  if (result.error && /is_admin/i.test(result.error.message || '')) {
-    result = await supabase
-      .from('users')
-      .upsert(basePayload, { onConflict: 'username' })
-      .select()
-  }
-
-  if (result.error && /public\.users|schema cache|does not exist/i.test(result.error.message || '')) {
-    return {
-      data: null,
-      error: new Error('Supabase table "users" is missing. Run the SQL in supabase/create_users_table.sql first.'),
-    }
-  }
-
-  return { data: result.data, error: result.error }
+  return Boolean(user && user.is_admin)
 }
 
 // ── Messages ──────────────────────────────────────────────
@@ -367,8 +319,6 @@ export async function reviewStudentMessage({ id, status, adminUsername }) {
     .select()
   return { data, error }
 }
-
-export { MOD_STATUS }
 
 // ====== DIRECT MESSAGES LOGIC (SLAMBOOK) ======
 
