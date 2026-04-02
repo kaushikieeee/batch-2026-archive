@@ -84,8 +84,15 @@ function MainApp() {
     }
   }, [user])
 
-  /* Lenis smooth scroll */
   useEffect(() => {
+    if (phase === 'app') {
+      document.body.style.overflow = ''
+    }
+  }, [phase])
+
+  useEffect(() => {
+    if (phase !== 'app') return // Only init Lenis when main app is active
+
     const noMotion = window.matchMedia('(prefers-reduced-motion:reduce)').matches
     const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0
     if (noMotion || isTouch) return
@@ -94,28 +101,34 @@ function MainApp() {
     const raf = t => { lenis.raf(t); id = requestAnimationFrame(raf) }
     id = requestAnimationFrame(raf)
     return () => { cancelAnimationFrame(id); lenis.destroy() }
-  }, [])
+  }, [phase])
 
   return (
     <>
       <div id="grain" aria-hidden="true" />
       <div id="vignette" aria-hidden="true" />
 
-      <AnimatePresence>
-        {phase === 'splash' && <Splash key="splash" onEnter={() => setPhase('login')} />}
+      <AnimatePresence mode="sync">
+        {phase === 'splash' && (
+          <motion.div key="splash-wrap" exit={{ opacity: 0 }}>
+            <Splash onEnter={() => setPhase('login')} />
+          </motion.div>
+        )}
       </AnimatePresence>
-      <AnimatePresence>
-        {phase === 'login' && <LoginScreen key="login" onLogin={u => { 
-          console.log("App receives onLogin callback", u)
-          try {
-            setUser(u); 
-            setPhase('app');
-            console.log("Navigating to /")
-            navigate('/', { replace: true });
-          } catch(err) {
-            console.error("Crash during login transition", err);
-          }
-        }} />}
+      <AnimatePresence mode="sync">
+        {phase === 'login' && (
+          <motion.div key="login-wrap" exit={{ opacity: 0 }} transition={{ duration: 0.8 }}>
+            <LoginScreen onLogin={u => { 
+              try {
+                setUser(u); 
+                setPhase('app');
+                navigate('/', { replace: true });
+              } catch(err) {
+                console.error("Crash during login transition", err);
+              }
+            }} />
+          </motion.div>
+        )}
       </AnimatePresence>
       <AnimatePresence>
         {phase === 'app' && (
