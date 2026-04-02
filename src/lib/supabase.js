@@ -274,6 +274,22 @@ export async function createSingleUser(payload) {
   return { data, error }
 }
 
+export async function deleteUser(id) {
+  const { error } = await supabase
+    .from('users')
+    .delete()
+    .eq('id', id)
+  return { error }
+}
+
+export async function passwordResetAdmin(id, newPassword) {
+  const { error } = await supabase
+    .from('users')
+    .update({ password: newPassword, must_change_password: true })
+    .eq('id', id)
+  return { error }
+}
+
 export async function createUsersBulk(rows) {
   const { data, error } = await supabase
     .from('users')

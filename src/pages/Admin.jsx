@@ -15,6 +15,8 @@ import {
   reviewMedia,
   reviewMessage,
   reviewStudentMessage,
+  deleteUser,
+  passwordResetAdmin,
 } from '../lib/supabase'
 
 const TABS = ['Users', 'Messages', 'Photos', 'Memos', 'Overview']
@@ -173,6 +175,38 @@ export default function Admin({ user }) {
       await loadUsers()
     } catch (err) {
       setError(err.message || 'Could not create/reset godmode user.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDeleteUser = async (id, username) => {
+    if (!window.confirm(`Are you absolutely sure you want to delete the user "${username}"?\nThis deletes all their messages and uploads too!`)) return
+    setLoading(true)
+    setError('')
+    try {
+      const { error: err } = await deleteUser(id)
+      if (err) throw err
+      await loadUsers()
+    } catch (err) {
+      setError(err.message || 'Could not delete user.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResetPassword = async (id, username) => {
+    const newPwd = window.prompt(`Enter a new temporary password for "${username}":`)
+    if (!newPwd || !newPwd.trim()) return
+    setLoading(true)
+    setError('')
+    try {
+      const { error: err } = await passwordResetAdmin(id, newPwd.trim())
+      if (err) throw err
+      await loadUsers()
+      alert(`Password for ${username} reset successfully.`)
+    } catch (err) {
+      setError(err.message || 'Could not reset password.')
     } finally {
       setLoading(false)
     }
@@ -407,10 +441,10 @@ export default function Admin({ user }) {
                     Export CSV
                  </button>
               </div>
-              <div className="grid grid-cols-12 px-4 py-3 border-b border-white/10 font-mono text-[10px] uppercase tracking-widest text-muted/70">
+              <div className="grid grid-cols-12 px-4 py-3 bg-white/5 border-b border-white/10 font-mono text-[10px] uppercase tracking-widest text-muted/70 sticky top-0 z-10 backdrop-blur-xl">
                 <div className="col-span-1">#</div>
                 <div className="col-span-5">Username</div>
-                <div className="col-span-6">Password</div>
+                <div className="col-span-6">Password & Settings</div>
               </div>
               <div className="max-h-[500px] overflow-auto relative">
                 {filteredUsers.map((u, idx) => (
@@ -431,8 +465,9 @@ export default function Admin({ user }) {
                           {u.name && <div className="text-[9px] text-muted uppercase tracking-wider">{u.name} — {u.section || 'No'}</div>}
                         </div>
                       </div>
-                      <div className="col-span-6 font-mono text-accent-yellow/90 flex items-center">
-                        {showPasswords ? u.password : '••••••••'}
+                      <div className="col-span-6 font-mono text-accent-yellow/90 flex items-center justify-between">
+                        <span>{showPasswords ? u.password : '••••••••'}</span>
+                        {u.is_admin && <span className="bg-red-500/20 text-red-200 border border-red-500/50 px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-bold">Admin</span>}
                       </div>
                     </summary>
                     <div className="px-4 pb-4 pt-1 ml-10 text-xs text-muted-foreground">
@@ -500,6 +535,14 @@ export default function Admin({ user }) {
                            </div>
                            <div className="text-[9px] text-muted leading-tight max-w-[140px]">
                               Click the card to open and preview the user's public modal.
+                           </div>
+
+                           <div className="w-full pt-4 mt-auto">
+                              <div className="text-[10px] text-red-400/60 uppercase tracking-widest mb-2 border-t border-red-500/20 pt-2">Danger Zone (Admin Actions)</div>
+                              <div className="flex flex-col gap-2 w-full max-w-[140px]">
+                                 <button onClick={() => handleResetPassword(u.id, u.username)} className="text-left w-full px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-mono bg-orange-500/10 text-orange-200 border border-orange-500/20 hover:bg-orange-500/20 transition-all text-center">Reset Pwd</button>
+                                 <button onClick={() => handleDeleteUser(u.id, u.username)} disabled={u.is_admin} className="text-left w-full px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-mono bg-red-500/10 text-red-200 border border-red-500/20 hover:bg-red-500/20 transition-all text-center disabled:opacity-30 disabled:cursor-not-allowed">Delete User</button>
+                              </div>
                            </div>
                         </div>
                       </div>
